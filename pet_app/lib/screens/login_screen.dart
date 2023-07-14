@@ -47,12 +47,8 @@ class _LoginPageState extends State<LoginPage> {
                         email: _emailController.text,
                         password: _passwordController.text);
 
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => MainPage(
-                                  email: _emailController.text,
-                                )));
+                    Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: (context) => MyApp()));
                   } catch (error) {
                     showErrorDialog(context, error.toString());
 

@@ -5,6 +5,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:pet_app/screens/login_screen.dart';
 import 'package:pet_app/screens/main_screen.dart';
+import 'package:pet_app/screens/map_screen.dart';
+import 'package:pet_app/screens/profile_screen.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -51,12 +53,8 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     if (FirebaseAuth.instance.currentUser != null) {
-      print(FirebaseAuth.instance.currentUser?.uid);
-      print("GOT USER");
       return Scaffold(
           appBar: AppBar(
-            // Here we take the value from the MyHomePage object that was created by
-            // the App.build method, and use it to set our appbar title.
             title: Text("Petter"),
           ),
           body: PersistentTabView(
@@ -67,8 +65,6 @@ class _MyHomePageState extends State<MyHomePage> {
     } else {
       return Scaffold(
           appBar: AppBar(
-            // Here we take the value from the MyHomePage object that was created by
-            // the App.build method, and use it to set our appbar title.
             title: Text("Petter"),
           ),
           body: LoginPage());
@@ -77,10 +73,7 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 List<Widget> screens() {
-  return [
-    MainPage(email: "TEST"),
-    LoginPage(),
-  ];
+  return [MainPage(email: "TEST"), MapSample(), ProfilePage()];
 }
 
 List<PersistentBottomNavBarItem> navBarItems() {
@@ -91,8 +84,13 @@ List<PersistentBottomNavBarItem> navBarItems() {
         activeColorPrimary: CupertinoColors.activeBlue,
         inactiveColorSecondary: CupertinoColors.systemGrey),
     PersistentBottomNavBarItem(
-        icon: const Icon(CupertinoIcons.chat_bubble),
-        title: "Chat",
+        icon: const Icon(CupertinoIcons.map),
+        title: "Map",
+        activeColorPrimary: CupertinoColors.activeBlue,
+        inactiveColorSecondary: CupertinoColors.systemGrey),
+    PersistentBottomNavBarItem(
+        icon: const Icon(CupertinoIcons.profile_circled),
+        title: "Profile",
         activeColorPrimary: CupertinoColors.activeBlue,
         inactiveColorSecondary: CupertinoColors.systemGrey)
   ];
