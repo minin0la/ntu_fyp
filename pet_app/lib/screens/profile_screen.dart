@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:pet_app/screens/editPet_screen.dart';
 import 'package:pet_app/screens/login_screen.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -38,6 +39,16 @@ class ProfilePage extends StatelessWidget {
               ListTile(
                 title: Text('Edit Profile'),
                 onTap: () {
+                  // Handle edit profile action
+                },
+              ),
+              ListTile(
+                title: Text('Edit Pets'),
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const editPetPage()));
                   // Handle edit profile action
                 },
               ),
