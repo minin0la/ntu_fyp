@@ -1,17 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 
-class editPetPage extends StatefulWidget {
-  const editPetPage({super.key});
+class AddPetScreen extends StatefulWidget {
+  const AddPetScreen({super.key});
 
   @override
-  State<editPetPage> createState() => _editPetPageState();
+  State<AddPetScreen> createState() => _AddPetScreenState();
 }
 
-class _editPetPageState extends State<editPetPage> {
+class _AddPetScreenState extends State<AddPetScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

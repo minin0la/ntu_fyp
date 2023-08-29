@@ -2,16 +2,17 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
-import 'package:pet_app/screens/editPet_screen.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:pet_app/screens/editpet_screen.dart';
 import 'package:pet_app/screens/login_screen.dart';
 
-class ProfilePage extends StatelessWidget {
-  const ProfilePage({super.key});
+class ProfileScreen extends StatelessWidget {
+  const ProfileScreen({super.key});
   Future<void> _logout(BuildContext context) async {
     try {
       await FirebaseAuth.instance.signOut();
       Navigator.of(context, rootNavigator: true).pushReplacement(
-        new MaterialPageRoute(builder: (context) => new LoginPage()),
+        new MaterialPageRoute(builder: (context) => new LoginPageScreen()),
       );
     } catch (e) {
       // Handle error if logout fails
@@ -28,6 +29,17 @@ class ProfilePage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              SizedBox(height: 30),
+              Text('Petter',
+                  style: GoogleFonts.getFont(
+                    'Dancing Script',
+                    textStyle: TextStyle(
+                      fontSize: 48,
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  )),
+              SizedBox(height: 8),
               Text(
                 'General Settings',
                 style: TextStyle(
@@ -48,7 +60,7 @@ class ProfilePage extends StatelessWidget {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const editPetPage()));
+                          builder: (context) => const EditPetScreen()));
                   // Handle edit profile action
                 },
               ),
