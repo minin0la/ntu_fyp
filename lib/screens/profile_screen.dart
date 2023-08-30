@@ -1,102 +1,103 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:pet_app/screens/editpet_screen.dart';
-import 'package:pet_app/screens/login_screen.dart';
+import 'package:pet_app/features/auth/controller/auth_controller.dart';
+import 'package:pet_app/features/pets/screens/addpet_screen.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
-  Future<void> _logout(BuildContext context) async {
-    try {
-      await FirebaseAuth.instance.signOut();
-      Navigator.of(context, rootNavigator: true).pushReplacement(
-        new MaterialPageRoute(builder: (context) => new LoginPageScreen()),
-      );
-    } catch (e) {
-      // Handle error if logout fails
-      print('Error logging out: $e');
-    }
+  // Future<void> _logout(BuildContext context) async {
+  //   try {
+  //     await FirebaseAuth.instance.signOut();
+  //     Navigator.of(context, rootNavigator: true).pushReplacement(
+  //       new MaterialPageRoute(builder: (context) => new LoginPageScreen()),
+  //     );
+  //   } catch (e) {
+  //     // Handle error if logout fails
+  //     print('Error logging out: $e');
+  //   }
+  // }
+  void logOut(WidgetRef ref) {
+    ref.read(authControllerProvider.notifier).logout();
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
               Text('Petter',
                   style: GoogleFonts.getFont(
                     'Dancing Script',
-                    textStyle: TextStyle(
+                    textStyle: const TextStyle(
                       fontSize: 48,
                       color: Colors.black,
                       fontWeight: FontWeight.bold,
                     ),
                   )),
-              SizedBox(height: 8),
-              Text(
+              const SizedBox(height: 8),
+              const Text(
                 'General Settings',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               ListTile(
-                title: Text('Edit Profile'),
+                title: const Text('Edit Profile'),
                 onTap: () {
                   // Handle edit profile action
                 },
               ),
               ListTile(
-                title: Text('Edit Pets'),
+                title: const Text('Edit Pets'),
                 onTap: () {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const EditPetScreen()));
+                          builder: (context) => const AddPetScreen()));
                   // Handle edit profile action
                 },
               ),
               ListTile(
-                title: Text('Change Password'),
+                title: const Text('Change Password'),
                 onTap: () {
                   // Handle change password action
                 },
               ),
               ListTile(
-                title: Text(
+                title: const Text(
                   'Logout',
                   style: TextStyle(color: Colors.red),
                 ),
                 onTap: () {
-                  _logout(context);
+                  logOut(ref);
                 },
               ),
-              Divider(),
-              Text(
+              const Divider(),
+              const Text(
                 'Notification Settings',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               SwitchListTile(
-                title: Text('Email Notifications'),
+                title: const Text('Email Notifications'),
                 value: true,
                 onChanged: (value) {
                   // Handle email notification toggle
                 },
               ),
               SwitchListTile(
-                title: Text('Push Notifications'),
+                title: const Text('Push Notifications'),
                 value: true,
                 onChanged: (value) {
                   // Handle push notification toggle

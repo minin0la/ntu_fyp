@@ -17,7 +17,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
         body: SafeArea(
       child: Column(
         children: [
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           TableCalendar(
             firstDay: DateTime.utc(2010, 10, 16),
             lastDay: DateTime.utc(2030, 3, 14),

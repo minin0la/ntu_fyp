@@ -6,12 +6,18 @@ import 'package:flutter/foundation.dart';
 import 'package:pet_app/models/pet_model.dart';
 
 class UserModel {
+  final String firstname;
+  final String lastname;
+  final String phonenumber;
   final String email;
   final String uid;
   final bool isAuthenticated;
   final String profilePic;
-  final List<PetModel> pets;
+  final List<Map> pets;
   UserModel({
+    required this.firstname,
+    required this.lastname,
+    required this.phonenumber,
     required this.email,
     required this.uid,
     required this.isAuthenticated,
@@ -20,13 +26,19 @@ class UserModel {
   });
 
   UserModel copyWith({
+    String? firstname,
+    String? lastname,
+    String? phonenumber,
     String? email,
     String? uid,
     bool? isAuthenticated,
     String? profilePic,
-    List<PetModel>? pets,
+    List<Map>? pets,
   }) {
     return UserModel(
+      firstname: firstname ?? this.firstname,
+      lastname: lastname ?? this.lastname,
+      phonenumber: phonenumber ?? this.phonenumber,
       email: email ?? this.email,
       uid: uid ?? this.uid,
       isAuthenticated: isAuthenticated ?? this.isAuthenticated,
@@ -37,24 +49,28 @@ class UserModel {
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
+      'firstname': firstname,
+      'lastname': lastname,
+      'phonenumber': phonenumber,
       'email': email,
       'uid': uid,
       'isAuthenticated': isAuthenticated,
       'profilePic': profilePic,
-      'pets': pets.map((x) => x.toMap()).toList(),
+      'pets': pets,
     };
   }
 
   factory UserModel.fromMap(Map<String, dynamic> map) {
     return UserModel(
+      firstname: map['firstname'] as String,
+      lastname: map['lastname'] as String,
+      phonenumber: map['phonenumber'] as String,
       email: map['email'] as String,
       uid: map['uid'] as String,
       isAuthenticated: map['isAuthenticated'] as bool,
       profilePic: map['profilePic'] as String,
-      pets: List<PetModel>.from(
-        (map['pets'] as List<int>).map<PetModel>(
-          (x) => PetModel.fromMap(x as Map<String, dynamic>),
-        ),
+      pets: List<Map>.from(
+        (map['pets']),
       ),
     );
   }
@@ -66,14 +82,17 @@ class UserModel {
 
   @override
   String toString() {
-    return 'UserModel(email: $email, uid: $uid, isAuthenticated: $isAuthenticated, profilePic: $profilePic, pets: $pets)';
+    return 'UserModel(firstname: $firstname, lastname: $lastname, phonenumber: $phonenumber, email: $email, uid: $uid, isAuthenticated: $isAuthenticated, profilePic: $profilePic, pets: $pets)';
   }
 
   @override
   bool operator ==(covariant UserModel other) {
     if (identical(this, other)) return true;
 
-    return other.email == email &&
+    return other.firstname == firstname &&
+        other.lastname == lastname &&
+        other.phonenumber == phonenumber &&
+        other.email == email &&
         other.uid == uid &&
         other.isAuthenticated == isAuthenticated &&
         other.profilePic == profilePic &&
@@ -82,7 +101,10 @@ class UserModel {
 
   @override
   int get hashCode {
-    return email.hashCode ^
+    return firstname.hashCode ^
+        lastname.hashCode ^
+        phonenumber.hashCode ^
+        email.hashCode ^
         uid.hashCode ^
         isAuthenticated.hashCode ^
         profilePic.hashCode ^

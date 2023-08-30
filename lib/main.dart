@@ -4,12 +4,18 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
+import 'package:pet_app/features/auth/controller/auth_controller.dart';
+import 'package:pet_app/core/common/loader.dart';
+import 'package:pet_app/models/user_model.dart';
+import 'package:pet_app/router.dart';
 import 'package:pet_app/screens/calendar_screen.dart';
-import 'package:pet_app/screens/editpet_screen.dart';
-import 'package:pet_app/screens/login_screen.dart';
-import 'package:pet_app/screens/main_screen.dart';
+import 'package:pet_app/features/pets/screens/addpet_screen.dart';
+import 'package:pet_app/features/auth/screens/login_screen.dart';
+import 'package:pet_app/features/home/screens/home_screen.dart';
 import 'package:pet_app/screens/map_screen.dart';
 import 'package:pet_app/screens/profile_screen.dart';
+import 'package:routemaster/routemaster.dart';
+import 'core/common/error_text.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -22,19 +28,50 @@ void main() async {
   ));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerStatefulWidget {
   const MyApp({super.key});
+
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() => _MyAppState();
+}
+
+class _MyAppState extends ConsumerState<MyApp> {
+  UserModel? userModel;
+  void getData(WidgetRef ref, User data) async {
+    userModel = await ref
+        .watch(authControllerProvider.notifier)
+        .getUserdata(data.uid)
+        .first;
+    ref.read(userProvider.notifier).update((state) => userModel);
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Petter',
-      theme: ThemeData(
-        scaffoldBackgroundColor: Colors.white,
-        primarySwatch: Colors.deepOrange,
-        // colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.deepOrange),
-      ),
-      home: const MyHomePage(),
-    );
+    return ref.watch(authStateChangeProvider).when(
+        data: (data) => MaterialApp.router(
+              title: 'Petter',
+              theme: ThemeData(
+                scaffoldBackgroundColor: Colors.white,
+                primarySwatch: Colors.deepOrange,
+                // colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.deepOrange),
+              ),
+              routerDelegate: RoutemasterDelegate(routesBuilder: (context) {
+                if (data != null) {
+                  // return loggedInRoute;
+                  getData(ref, data);
+                  if (userModel != null) {
+                    return loggedInRoute;
+                  }
+                }
+
+                return loggedOutRoute;
+              }),
+              routeInformationParser: const RoutemasterParser(),
+              // home: const MyHomePage(),
+            ),
+        error: (error, stackTrace) => ErrorText(error: error.toString()),
+        loading: () => const Loader());
   }
 }
 
@@ -96,11 +133,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
 List<Widget> screens() {
   return [
-    MainScreen(email: "TEST"),
+    // MainScreen(email: "TEST"),
+    const HomeScreen(),
     const CalendarScreen(),
     const MapScreen(),
     const ProfileScreen(),
-    const EditPetScreen(),
+    const AddPetScreen(),
   ];
 }
 

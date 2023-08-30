@@ -3,96 +3,90 @@ import 'dart:convert';
 
 class PetModel {
   final String? id;
-  final String petName;
-  final String petType;
-  final String petBreed;
-  final int petAge;
-  final int petWeight;
-  final bool petVaccinated;
-  final bool petNeutered;
-  final bool petMicrochip;
-  final DateTime petBirthDate;
-  final DateTime petLastCheckup;
-  final DateTime petLastGrooming;
+  final String ownerid;
+  final String avatar;
+  final String name;
+  final String type;
+  final String breed;
+  final int age;
+  final int weight;
+  final bool vaccinated;
+  final bool neutered;
+  final bool microchip;
+  // final DateTime petBirthDate;
+  // final DateTime petLastCheckup;
+  // final DateTime petLastGrooming;
   PetModel({
     this.id,
-    required this.petName,
-    required this.petType,
-    required this.petBreed,
-    required this.petAge,
-    required this.petWeight,
-    required this.petVaccinated,
-    required this.petNeutered,
-    required this.petMicrochip,
-    required this.petBirthDate,
-    required this.petLastCheckup,
-    required this.petLastGrooming,
+    required this.ownerid,
+    required this.avatar,
+    required this.name,
+    required this.type,
+    required this.breed,
+    required this.age,
+    required this.weight,
+    required this.vaccinated,
+    required this.neutered,
+    required this.microchip,
   });
 
   PetModel copyWith({
     String? id,
-    String? petName,
-    String? petType,
-    String? petBreed,
-    int? petAge,
-    int? petWeight,
-    bool? petVaccinated,
-    bool? petNeutered,
-    bool? petMicrochip,
-    DateTime? petBirthDate,
-    DateTime? petLastCheckup,
-    DateTime? petLastGrooming,
+    String? ownerid,
+    String? avatar,
+    String? name,
+    String? type,
+    String? breed,
+    int? age,
+    int? weight,
+    bool? vaccinated,
+    bool? neutered,
+    bool? microchip,
   }) {
     return PetModel(
       id: id ?? this.id,
-      petName: petName ?? this.petName,
-      petType: petType ?? this.petType,
-      petBreed: petBreed ?? this.petBreed,
-      petAge: petAge ?? this.petAge,
-      petWeight: petWeight ?? this.petWeight,
-      petVaccinated: petVaccinated ?? this.petVaccinated,
-      petNeutered: petNeutered ?? this.petNeutered,
-      petMicrochip: petMicrochip ?? this.petMicrochip,
-      petBirthDate: petBirthDate ?? this.petBirthDate,
-      petLastCheckup: petLastCheckup ?? this.petLastCheckup,
-      petLastGrooming: petLastGrooming ?? this.petLastGrooming,
+      ownerid: ownerid ?? this.ownerid,
+      avatar: avatar ?? this.avatar,
+      name: name ?? this.name,
+      type: type ?? this.type,
+      breed: breed ?? this.breed,
+      age: age ?? this.age,
+      weight: weight ?? this.weight,
+      vaccinated: vaccinated ?? this.vaccinated,
+      neutered: neutered ?? this.neutered,
+      microchip: microchip ?? this.microchip,
     );
   }
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'id': id,
-      'petName': petName,
-      'petType': petType,
-      'petBreed': petBreed,
-      'petAge': petAge,
-      'petWeight': petWeight,
-      'petVaccinated': petVaccinated,
-      'petNeutered': petNeutered,
-      'petMicrochip': petMicrochip,
-      'petBirthDate': petBirthDate.millisecondsSinceEpoch,
-      'petLastCheckup': petLastCheckup.millisecondsSinceEpoch,
-      'petLastGrooming': petLastGrooming.millisecondsSinceEpoch,
+      'ownerid': ownerid,
+      'avatar': avatar,
+      'name': name,
+      'type': type,
+      'breed': breed,
+      'age': age,
+      'weight': weight,
+      'vaccinated': vaccinated,
+      'neutered': neutered,
+      'microchip': microchip,
     };
   }
 
   factory PetModel.fromMap(Map<String, dynamic> map) {
     return PetModel(
       id: map['id'] != null ? map['id'] as String : null,
-      petName: map['petName'] as String,
-      petType: map['petType'] as String,
-      petBreed: map['petBreed'] as String,
-      petAge: map['petAge'] as int,
-      petWeight: map['petWeight'] as int,
-      petVaccinated: map['petVaccinated'] as bool,
-      petNeutered: map['petNeutered'] as bool,
-      petMicrochip: map['petMicrochip'] as bool,
-      petBirthDate:
-          DateTime.fromMillisecondsSinceEpoch(map['petBirthDate'] as int),
-      petLastCheckup:
-          DateTime.fromMillisecondsSinceEpoch(map['petLastCheckup'] as int),
-      petLastGrooming:
-          DateTime.fromMillisecondsSinceEpoch(map['petLastGrooming'] as int),
+      ownerid: map['ownerid'] as String,
+      avatar: map['avatar'] as String,
+      name: map['name'] as String,
+      type: map['type'] as String,
+      breed: map['breed'] as String,
+      age: map['age'] as int,
+      weight: map['weight'] as int,
+      vaccinated: map['vaccinated'] as bool,
+      neutered: map['neutered'] as bool,
+      microchip: map['microchip'] as bool,
     );
   }
 
@@ -103,7 +97,7 @@ class PetModel {
 
   @override
   String toString() {
-    return 'PetModel(id: $id, petName: $petName, petType: $petType, petBreed: $petBreed, petAge: $petAge, petWeight: $petWeight, petVaccinated: $petVaccinated, petNeutered: $petNeutered, petMicrochip: $petMicrochip, petBirthDate: $petBirthDate, petLastCheckup: $petLastCheckup, petLastGrooming: $petLastGrooming)';
+    return 'PetModel(id: $id, ownerid: $ownerid, avatar: $avatar, name: $name, type: $type, breed: $breed, age: $age, weight: $weight, vaccinated: $vaccinated, neutered: $neutered, microchip: $microchip)';
   }
 
   @override
@@ -111,32 +105,30 @@ class PetModel {
     if (identical(this, other)) return true;
 
     return other.id == id &&
-        other.petName == petName &&
-        other.petType == petType &&
-        other.petBreed == petBreed &&
-        other.petAge == petAge &&
-        other.petWeight == petWeight &&
-        other.petVaccinated == petVaccinated &&
-        other.petNeutered == petNeutered &&
-        other.petMicrochip == petMicrochip &&
-        other.petBirthDate == petBirthDate &&
-        other.petLastCheckup == petLastCheckup &&
-        other.petLastGrooming == petLastGrooming;
+        other.ownerid == ownerid &&
+        other.avatar == avatar &&
+        other.name == name &&
+        other.type == type &&
+        other.breed == breed &&
+        other.age == age &&
+        other.weight == weight &&
+        other.vaccinated == vaccinated &&
+        other.neutered == neutered &&
+        other.microchip == microchip;
   }
 
   @override
   int get hashCode {
     return id.hashCode ^
-        petName.hashCode ^
-        petType.hashCode ^
-        petBreed.hashCode ^
-        petAge.hashCode ^
-        petWeight.hashCode ^
-        petVaccinated.hashCode ^
-        petNeutered.hashCode ^
-        petMicrochip.hashCode ^
-        petBirthDate.hashCode ^
-        petLastCheckup.hashCode ^
-        petLastGrooming.hashCode;
+        ownerid.hashCode ^
+        avatar.hashCode ^
+        name.hashCode ^
+        type.hashCode ^
+        breed.hashCode ^
+        age.hashCode ^
+        weight.hashCode ^
+        vaccinated.hashCode ^
+        neutered.hashCode ^
+        microchip.hashCode;
   }
 }
