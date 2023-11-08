@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_maps_webservice/places.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -9,6 +10,8 @@ class MapScreen extends StatefulWidget {
   @override
   State<MapScreen> createState() => MapScreenState();
 }
+
+// final _places = GoogleMapsPlaces(apiKey: '')
 
 class MapScreenState extends State<MapScreen> {
   final Completer<GoogleMapController> _controller =

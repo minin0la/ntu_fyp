@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
 class PetModel {
@@ -13,9 +12,15 @@ class PetModel {
   final bool vaccinated;
   final bool neutered;
   final bool microchip;
-  // final DateTime petBirthDate;
-  // final DateTime petLastCheckup;
-  // final DateTime petLastGrooming;
+  final DateTime birthday;
+  final DateTime lastvetvisit;
+  final DateTime lastgrooming;
+  final DateTime lastwalk;
+  final DateTime lastbath;
+  final DateTime lastmedication;
+  final DateTime lastplaytime;
+  final DateTime lastfeeding;
+
   PetModel({
     this.id,
     required this.ownerid,
@@ -28,6 +33,14 @@ class PetModel {
     required this.vaccinated,
     required this.neutered,
     required this.microchip,
+    required this.birthday,
+    required this.lastvetvisit,
+    required this.lastgrooming,
+    required this.lastwalk,
+    required this.lastbath,
+    required this.lastmedication,
+    required this.lastplaytime,
+    required this.lastfeeding,
   });
 
   PetModel copyWith({
@@ -42,6 +55,14 @@ class PetModel {
     bool? vaccinated,
     bool? neutered,
     bool? microchip,
+    DateTime? birthday,
+    DateTime? lastvetvisit,
+    DateTime? lastgrooming,
+    DateTime? lastwalk,
+    DateTime? lastbath,
+    DateTime? lastmedication,
+    DateTime? lastplaytime,
+    DateTime? lastfeeding,
   }) {
     return PetModel(
       id: id ?? this.id,
@@ -55,6 +76,14 @@ class PetModel {
       vaccinated: vaccinated ?? this.vaccinated,
       neutered: neutered ?? this.neutered,
       microchip: microchip ?? this.microchip,
+      birthday: birthday ?? this.birthday,
+      lastvetvisit: lastvetvisit ?? this.lastvetvisit,
+      lastgrooming: lastgrooming ?? this.lastgrooming,
+      lastwalk: lastwalk ?? this.lastwalk,
+      lastbath: lastbath ?? this.lastbath,
+      lastmedication: lastmedication ?? this.lastmedication,
+      lastplaytime: lastplaytime ?? this.lastplaytime,
+      lastfeeding: lastfeeding ?? this.lastfeeding,
     );
   }
 
@@ -71,6 +100,14 @@ class PetModel {
       'vaccinated': vaccinated,
       'neutered': neutered,
       'microchip': microchip,
+      'birthday': birthday.millisecondsSinceEpoch,
+      'lastvetvisit': lastvetvisit.millisecondsSinceEpoch,
+      'lastgrooming': lastgrooming.millisecondsSinceEpoch,
+      'lastwalk': lastwalk.millisecondsSinceEpoch,
+      'lastbath': lastbath.millisecondsSinceEpoch,
+      'lastmedication': lastmedication.millisecondsSinceEpoch,
+      'lastplaytime': lastplaytime.millisecondsSinceEpoch,
+      'lastfeeding': lastfeeding.millisecondsSinceEpoch,
     };
   }
 
@@ -87,6 +124,19 @@ class PetModel {
       vaccinated: map['vaccinated'] as bool,
       neutered: map['neutered'] as bool,
       microchip: map['microchip'] as bool,
+      birthday: DateTime.fromMillisecondsSinceEpoch(map['birthday'] as int),
+      lastvetvisit:
+          DateTime.fromMillisecondsSinceEpoch(map['lastvetvisit'] as int),
+      lastgrooming:
+          DateTime.fromMillisecondsSinceEpoch(map['lastgrooming'] as int),
+      lastwalk: DateTime.fromMillisecondsSinceEpoch(map['lastwalk'] as int),
+      lastbath: DateTime.fromMillisecondsSinceEpoch(map['lastbath'] as int),
+      lastmedication:
+          DateTime.fromMillisecondsSinceEpoch(map['lastmedication'] as int),
+      lastplaytime:
+          DateTime.fromMillisecondsSinceEpoch(map['lastplaytime'] as int),
+      lastfeeding:
+          DateTime.fromMillisecondsSinceEpoch(map['lastfeeding'] as int),
     );
   }
 
@@ -97,7 +147,7 @@ class PetModel {
 
   @override
   String toString() {
-    return 'PetModel(id: $id, ownerid: $ownerid, avatar: $avatar, name: $name, type: $type, breed: $breed, age: $age, weight: $weight, vaccinated: $vaccinated, neutered: $neutered, microchip: $microchip)';
+    return 'PetModel(id: $id, ownerid: $ownerid, avatar: $avatar, name: $name, type: $type, breed: $breed, age: $age, weight: $weight, vaccinated: $vaccinated, neutered: $neutered, microchip: $microchip, birthday: $birthday, lastvetvisit: $lastvetvisit, lastgrooming: $lastgrooming, lastwalk: $lastwalk, lastbath: $lastbath, lastmedication: $lastmedication, lastplaytime: $lastplaytime, lastfeeding: $lastfeeding)';
   }
 
   @override
@@ -114,7 +164,15 @@ class PetModel {
         other.weight == weight &&
         other.vaccinated == vaccinated &&
         other.neutered == neutered &&
-        other.microchip == microchip;
+        other.microchip == microchip &&
+        other.birthday == birthday &&
+        other.lastvetvisit == lastvetvisit &&
+        other.lastgrooming == lastgrooming &&
+        other.lastwalk == lastwalk &&
+        other.lastbath == lastbath &&
+        other.lastmedication == lastmedication &&
+        other.lastplaytime == lastplaytime &&
+        other.lastfeeding == lastfeeding;
   }
 
   @override
@@ -129,6 +187,14 @@ class PetModel {
         weight.hashCode ^
         vaccinated.hashCode ^
         neutered.hashCode ^
-        microchip.hashCode;
+        microchip.hashCode ^
+        birthday.hashCode ^
+        lastvetvisit.hashCode ^
+        lastgrooming.hashCode ^
+        lastwalk.hashCode ^
+        lastbath.hashCode ^
+        lastmedication.hashCode ^
+        lastplaytime.hashCode ^
+        lastfeeding.hashCode;
   }
 }

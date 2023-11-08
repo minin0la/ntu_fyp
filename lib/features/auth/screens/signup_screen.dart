@@ -3,8 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pet_app/features/auth/controller/auth_controller.dart';
 import 'package:pet_app/core/common/loader.dart';
-import 'package:pet_app/features/auth/repo/auth_repo.dart';
-import 'package:pet_app/features/auth/screens/login_screen.dart';
 import 'package:routemaster/routemaster.dart';
 
 class SignupScreen extends ConsumerWidget {

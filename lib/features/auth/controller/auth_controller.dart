@@ -44,7 +44,6 @@ class AuthController extends StateNotifier<bool> {
         firstname, lastname, phonenumber, email, password);
     state = false;
     user.fold((l) => showSnackBar(context, l.message), (userModel) {
-      // _ref.read(userProvider.notifier).update((state) => userModel);
       Routemaster.of(context).pop();
     });
   }
@@ -56,7 +55,6 @@ class AuthController extends StateNotifier<bool> {
     state = false;
     user.fold((l) => showSnackBar(context, l.message), (userModel) {
       _ref.read(userProvider.notifier).update((state) => userModel);
-      // Routemaster.of(context).push('/');
     });
   }
 

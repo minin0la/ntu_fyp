@@ -38,25 +38,17 @@ class AuthRepo {
       UserCredential userCredential = await _auth
           .createUserWithEmailAndPassword(email: email, password: password);
       UserModel userModel;
-      // Check if new user.
-      if (userCredential.additionalUserInfo!.isNewUser) {
-        // If new user, add new data to firestrore
-        userModel = UserModel(
-            firstname: firstname,
-            lastname: lastname,
-            phonenumber: phonenumber,
-            email: email,
-            uid: userCredential.user!.uid,
-            isAuthenticated: true,
-            profilePic:
-                "https://cdn.vectorstock.com/i/preview-1x/70/84/default-avatar-profile-icon-symbol-for-website-vector-46547084.jpg",
-            pets: []);
-        await _users.doc(userCredential.user!.uid).set(userModel.toMap());
-      } else {
-        // If not new user, get data from firebase and store in userModel
-        userModel = await getUserdata(userCredential.user!.uid).first;
-      }
-      // if not error, return userModel
+      userModel = UserModel(
+          firstname: firstname,
+          lastname: lastname,
+          phonenumber: phonenumber,
+          email: email,
+          uid: userCredential.user!.uid,
+          isAuthenticated: true,
+          profilePic:
+              "https://cdn.vectorstock.com/i/preview-1x/70/84/default-avatar-profile-icon-symbol-for-website-vector-46547084.jpg",
+          pets: []);
+      await _users.doc(userCredential.user!.uid).set(userModel.toMap());
       return right(userModel);
     } on FirebaseException catch (e) {
       throw e.message!;
@@ -74,7 +66,6 @@ class AuthRepo {
       UserModel userModel;
       // Check if new user.
       userModel = await getUserdata(userCredential.user!.uid).first;
-
       // if not error, return userModel
       return right(userModel);
     } on FirebaseException catch (e) {

@@ -55,16 +55,16 @@ class ProfileScreen extends ConsumerWidget {
                   // Handle edit profile action
                 },
               ),
-              ListTile(
-                title: const Text('Edit Pets'),
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const AddPetScreen()));
-                  // Handle edit profile action
-                },
-              ),
+              // ListTile(
+              //   title: const Text('Edit Pets'),
+              //   onTap: () {
+              //     Navigator.push(
+              //         context,
+              //         MaterialPageRoute(
+              //             builder: (context) => const AddPetScreen()));
+              //     // Handle edit profile action
+              //   },
+              // ),
               ListTile(
                 title: const Text('Change Password'),
                 onTap: () {
@@ -80,29 +80,29 @@ class ProfileScreen extends ConsumerWidget {
                   logOut(ref);
                 },
               ),
-              const Divider(),
-              const Text(
-                'Notification Settings',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 10),
-              SwitchListTile(
-                title: const Text('Email Notifications'),
-                value: true,
-                onChanged: (value) {
-                  // Handle email notification toggle
-                },
-              ),
-              SwitchListTile(
-                title: const Text('Push Notifications'),
-                value: true,
-                onChanged: (value) {
-                  // Handle push notification toggle
-                },
-              ),
+              // const Divider(),
+              // const Text(
+              //   'Notification Settings',
+              //   style: TextStyle(
+              //     fontSize: 18,
+              //     fontWeight: FontWeight.bold,
+              //   ),
+              // ),
+              // const SizedBox(height: 10),
+              // SwitchListTile(
+              //   title: const Text('Email Notifications'),
+              //   value: true,
+              //   onChanged: (value) {
+              //     // Handle email notification toggle
+              //   },
+              // ),
+              // SwitchListTile(
+              //   title: const Text('Push Notifications'),
+              //   value: true,
+              //   onChanged: (value) {
+              //     // Handle push notification toggle
+              //   },
+              // ),
             ],
           ),
         ),

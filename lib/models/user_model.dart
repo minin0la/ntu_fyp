@@ -3,7 +3,6 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 
-import 'package:pet_app/models/pet_model.dart';
 
 class UserModel {
   final String firstname;

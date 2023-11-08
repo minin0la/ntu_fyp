@@ -4,13 +4,24 @@ import 'package:pet_app/core/common/error_text.dart';
 import 'package:pet_app/core/common/loader.dart';
 import 'package:pet_app/features/auth/controller/auth_controller.dart';
 import 'package:pet_app/features/pets/controller/pet_controller.dart';
+import 'package:pet_app/models/pet_model.dart';
+import 'package:routemaster/routemaster.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
+  void navigateToPetScreen(BuildContext context, PetModel pet) {
+    Routemaster.of(context).push('/pets/${pet.id}');
+  }
+
+  void navigateToAddPetScreen(BuildContext context) {
+    Routemaster.of(context).push('/add-pet');
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(userProvider);
+    final refreshPets = ref.watch(petAttentionProvider);
 
     return Scaffold(
       backgroundColor: Colors.deepOrange,
@@ -70,14 +81,56 @@ class HomeScreen extends ConsumerWidget {
                     children: [
                       Expanded(
                         child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          padding: const EdgeInsets.all(20),
-                          child: const Text("All set! Nothing to do here."),
-                        ),
-                      ),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            padding: const EdgeInsets.all(20),
+                            child: refreshPets.isEmpty
+                                ? const Text(
+                                    'All good!',
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black),
+                                  )
+                                : Text(
+                                    '${refreshPets.map((pet) => pet.name).join(", ")} needs your attention',
+                                    style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black),
+                                  )),
+                      )
+
+                      // ref.watch(petLoopProvider).when(
+                      //     data: ((pets) => Expanded(
+                      //           child: Container(
+                      //               decoration: BoxDecoration(
+                      //                 color: Colors.white,
+                      //                 borderRadius: BorderRadius.circular(12),
+                      //               ),
+                      //               padding: const EdgeInsets.all(20),
+                      //               child: pets == null
+                      //                   ? const Text(
+                      //                       'All good!',
+                      //                       style: TextStyle(
+                      //                           fontSize: 18,
+                      //                           fontWeight: FontWeight.bold,
+                      //                           color: Colors.black),
+                      //                     )
+                      //                   : Text(
+                      //                       '${pets.map((pet) => pet.name).join(", ")} needs your attention',
+                      //                       style: const TextStyle(
+                      //                           fontSize: 18,
+                      //                           fontWeight: FontWeight.bold,
+                      //                           color: Colors.black),
+                      //                     )),
+                      //         )),
+                      //     error: (error, stackTrace) =>
+                      //         ErrorText(error: error.toString()),
+                      //     loading: (() => const Loader()))
+                      // Text(pets.value[0].name.toString())
                     ],
                   ),
                 ],
@@ -92,17 +145,22 @@ class HomeScreen extends ConsumerWidget {
                   child: Column(
                 children: [
                   // Pet heading
-                  const Row(
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        "Your Pets",
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
+                      const Text('Your Pets',
+                          style: TextStyle(
+                              fontSize: 19, fontWeight: FontWeight.bold)),
+                      OutlinedButton(
+                          onPressed: () => navigateToAddPetScreen(context),
+                          style: ElevatedButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20)),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 25)),
+                          child: const Text("Add Pet"))
                     ],
                   ),
-                  //List of pets
                   const SizedBox(height: 20),
                   Container(
                     decoration: BoxDecoration(
@@ -119,21 +177,42 @@ class HomeScreen extends ConsumerWidget {
                               itemCount: pets.length,
                               itemBuilder: (context, index) {
                                 final pet = pets[index];
-                                return Column(
-                                  children: [
-                                    CircleAvatar(
-                                      // subtitle: Text(pets[index].breed),
-                                      // leading: CircleAvatar(
-                                      backgroundImage: NetworkImage(pet.avatar),
-                                      // ),
+                                return Container(
+                                  margin: const EdgeInsets.symmetric(
+                                      vertical: 10, horizontal: 10),
+                                  decoration: BoxDecoration(
+                                      color: refreshPets
+                                              .map((pet) => pet.name)
+                                              .toList()
+                                              .contains(pet.name)
+                                          ? Colors.red.withOpacity(0.2)
+                                          : Colors.green.withOpacity(0.2),
+                                      borderRadius: const BorderRadius.all(
+                                          Radius.circular(20))),
+                                  child: InkWell(
+                                    onTap: () {
+                                      navigateToPetScreen(context, pet);
+                                    },
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        CircleAvatar(
+                                          // subtitle: Text(pets[index].breed),
+                                          // leading: CircleAvatar(
+                                          backgroundImage:
+                                              NetworkImage(pet.avatar),
+                                          // ),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Text(pet.name,
+                                            style: const TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                            )),
+                                      ],
                                     ),
-                                    const SizedBox(height: 8),
-                                    Text(pet.name,
-                                        style: const TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                        )),
-                                  ],
+                                  ),
                                 );
                               },
                             ),
@@ -141,38 +220,6 @@ class HomeScreen extends ConsumerWidget {
                       error: (error, stackTrace) =>
                           ErrorText(error: error.toString()),
                       loading: (() => const Loader()))
-                  // Expanded(
-                  //     child: _imageUrls.isEmpty
-                  //         ? const Center(
-                  //             child: CircularProgressIndicator(),
-                  //           )
-                  //         : GridView.count(
-                  //             crossAxisCount: 2,
-                  //             children: _imageUrls
-                  //                 .asMap()
-                  //                 .entries
-                  //                 .map((entry) => Column(
-                  //                       children: [
-                  //                         CircleAvatar(
-                  //                           radius: 70.0,
-                  //                           backgroundImage: NetworkImage(
-                  //                             entry.value,
-                  //                             // fit: BoxFit.cover,
-                  //                           ),
-                  //                         ),
-                  //                         const SizedBox(height: 8),
-                  //                         Text(
-                  //                           'Pet ${entry.key + 1}',
-                  //                           style: const TextStyle(
-                  //                             fontSize: 16,
-                  //                             fontWeight: FontWeight.bold,
-                  //                           ),
-                  //                           textAlign: TextAlign.center,
-                  //                         ),
-                  //                       ],
-                  //                     ))
-                  //                 .toList(),
-                  //           )),
                 ],
               )),
             )),
