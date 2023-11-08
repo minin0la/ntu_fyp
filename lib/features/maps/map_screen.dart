@@ -1,87 +1,293 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_webservice/places.dart';
+import 'package:pet_app/features/maps/controller/map_controller.dart';
 
-class MapScreen extends StatefulWidget {
+import 'package:http/http.dart' as http;
+import 'dart:convert' as convert;
+
+class MapScreen extends ConsumerStatefulWidget {
   const MapScreen({super.key});
 
   @override
-  State<MapScreen> createState() => MapScreenState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _MapScreenState();
 }
 
-// final _places = GoogleMapsPlaces(apiKey: '')
+class _MapScreenState extends ConsumerState<MapScreen> {
+  @override
+  void initState() {
+    super.initState();
+    currentLocation = LatLng(1.290270, 103.851959);
+    tappedPlacedDetail = {};
+  }
 
-class MapScreenState extends State<MapScreen> {
-  final Completer<GoogleMapController> _controller =
-      Completer<GoogleMapController>();
+  @override
+  void dispose() {
+    super.dispose();
+  }
 
-  static const CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(1.3483099, 103.6831347),
-    zoom: 14.4746,
-  );
+  var tappedPlacedDetail;
+  LatLng currentLocation =
+      LatLng(1.290270, 103.851959); // Initial location coordinates
 
-  final List<Marker> _markers = <Marker>[
-    const Marker(
-        markerId: MarkerId('1'),
-        position: LatLng(1.3483099, 103.6831347),
-        infoWindow: InfoWindow(
-          title: 'My Position',
-        )),
-  ];
+  String selectedFilter = 'veterinary_care'; // Default filter
 
-  Future<Position> getUserCurrentLocation() async {
-    await Geolocator.requestPermission()
-        .then((value) {})
-        .onError((error, stackTrace) async {
-      await Geolocator.requestPermission();
+  bool showOpenNowOnly = true; // Keep track of whether to show open now only
+
+  Future<void> updateListView(MapController mapController) async {
+    Position position = await mapController.getUserCurrentLocation();
+    LatLng currentLocation = LatLng(position.latitude, position.longitude);
+
+    List<PlacesSearchResult> results =
+        await mapController.searchPlaces('', currentLocation, selectedFilter);
+
+    if (showOpenNowOnly) {
+      results = results
+          .where((place) => place.openingHours?.openNow ?? false)
+          .toList();
+    }
+
+    setState(() {
+      ref.read(mapPlacesProvider.notifier).update((state) => results);
     });
-    return await Geolocator.getCurrentPosition();
+  }
+
+  Future<Map<String, dynamic>> getPlace(String? input) async {
+    final String url =
+        'https://maps.googleapis.com/maps/api/place/details/json?place_id=$input&key=AIzaSyAdAIFHBBzNyyB6-JzY5dQtOGiLcM9y25w';
+
+    var response = await http.get(Uri.parse(url));
+
+    var json = convert.jsonDecode(response.body);
+
+    var results = json['result'] as Map<String, dynamic>;
+
+    return results;
   }
 
   @override
   Widget build(BuildContext context) {
+    final mapController = ref.read(mapControllerProvider.notifier);
+    final mapPlaces = ref.watch(mapPlacesProvider);
+    final mapSearch = ref.watch(mapsearchProvider);
     return Scaffold(
-      body: GoogleMap(
-        mapType: MapType.hybrid,
-        initialCameraPosition: _kGooglePlex,
-        markers: Set<Marker>.of(_markers),
-        // on below line setting user location enabled.
-        myLocationEnabled: true,
-        // on below line setting compass enabled.
-        compassEnabled: true,
-        // on below line specifying controller on map complete.
-        onMapCreated: (GoogleMapController controller) {
-          _controller.complete(controller);
+      appBar: AppBar(
+        title: Text('Nearby'),
+        actions: [
+          // DropdownButton<String>(
+          //   value: selectedFilter,
+          //   onChanged: (String? newValue) {
+          //     setState(() {
+          //       selectedFilter = newValue!;
+          //     });
+          //   },
+          //   items: <String>['veterinary_care', 'pet_store', 'dog_park']
+          //       .map<DropdownMenuItem<String>>((String value) {
+          //     String label;
+          //     if (value == 'veterinary_care') {
+          //       label = 'Veterinary Care';
+          //     } else if (value == 'pet_store') {
+          //       label = 'Pet Store';
+          //     } else if (value == 'dog_park') {
+          //       label = 'Dog Park';
+          //     } else {
+          //       label = value;
+          //     }
+          //     return DropdownMenuItem<String>(
+          //       value: value,
+          //       child: Text(label),
+          //     );
+          //   }).toList(),
+          // ),
+          IconButton(
+            icon: Icon(Icons.refresh),
+            onPressed: () async {
+              Position position = await mapController.getUserCurrentLocation();
+              setState(() {
+                currentLocation = LatLng(position.latitude, position.longitude);
+              });
+              updateListView(mapController);
+            },
+          ),
+        ],
+      ),
+      body: StreamBuilder<List<PlacesSearchResult>>(
+        stream: Stream.value(mapPlaces), // Example location coordinates
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return CircularProgressIndicator(); // Show a loading indicator while waiting for data
+          } else if (snapshot.hasError) {
+            return Text('Error: ${snapshot.error}');
+          } else {
+            if (snapshot.data!.length == 0) {
+              updateListView(mapController);
+            }
+            // if (snapshot.data == []) {
+            //   updateListView(mapController);
+            // }
+            List<PlacesSearchResult> _placesList = snapshot.data!;
+            return SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              child: Column(
+                children: [
+                  ListView.builder(
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: _placesList.length,
+                    itemBuilder: (context, index) {
+                      final place = _placesList[index];
+                      final bool isOpenNow =
+                          place.openingHours?.openNow ?? false;
+                      return ListTile(
+                        title: Text('${place.name}'),
+                        subtitle: Row(
+                          children: [
+                            Text(
+                              isOpenNow ? 'Open Now' : 'Closed',
+                              style: TextStyle(
+                                color: isOpenNow ? Colors.green : Colors.red,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(
+                                width:
+                                    8), // Add some space between the title and "Open Now"
+                            Expanded(
+                              // Added Expanded widget here
+                              child: Text(
+                                // Wrapped Text widget with Expanded
+                                place.vicinity!,
+                                overflow: TextOverflow
+                                    .ellipsis, // Added this line to handle long text
+                              ),
+                            ),
+                          ],
+                        ),
+                        trailing: IconButton(
+                          icon: Icon(Icons.arrow_forward),
+                          onPressed: () async {
+                            print(place.placeId);
+                            tappedPlacedDetail = await getPlace(place.placeId);
+                            setState(() {});
+                            openDetailsScreen(context, place);
+                          },
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            );
+          }
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          getUserCurrentLocation().then((value) async {
-            // marker added for current users location
-            _markers.add(Marker(
-              markerId: const MarkerId("2"),
-              position: LatLng(value.latitude, value.longitude),
-              infoWindow: const InfoWindow(
-                title: 'My Current Location',
-              ),
-            ));
-
-            // specified current users location
-            CameraPosition cameraPosition = CameraPosition(
-              target: LatLng(value.latitude, value.longitude),
-              zoom: 14,
-            );
-
-            final GoogleMapController controller = await _controller.future;
-            controller
-                .animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
-            setState(() {});
-          });
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (context) {
+              return StatefulBuilder(
+                builder: (BuildContext context, StateSetter setState) {
+                  return AlertDialog(
+                    title: Text('Select Filter'),
+                    content: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        DropdownButton<String>(
+                          value: selectedFilter,
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              selectedFilter = newValue!;
+                            });
+                          },
+                          items: <String>[
+                            'veterinary_care',
+                            'pet_store',
+                            // 'dog_park'
+                          ].map<DropdownMenuItem<String>>((String value) {
+                            String label;
+                            if (value == 'veterinary_care') {
+                              label = 'Veterinary Care';
+                            } else if (value == 'pet_store') {
+                              label = 'Pet Store';
+                            } else {
+                              label = value;
+                            }
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(label),
+                            );
+                          }).toList(),
+                        ),
+                        CheckboxListTile(
+                          title: Text('Open Now Only'),
+                          value: showOpenNowOnly,
+                          onChanged: (bool? value) {
+                            setState(() {
+                              showOpenNowOnly = value ?? false;
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          updateListView(
+                              mapController); // Call updateListView after selecting options
+                          Navigator.pop(context);
+                        },
+                        child: Text('Apply'),
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+          );
         },
-        child: const Icon(Icons.local_activity),
+        child: Icon(Icons.filter_list),
       ),
+    );
+  }
+
+  void openDetailsScreen(BuildContext context, PlacesSearchResult place) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(place.name ?? ''),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (place.photos != null && place.photos!.isNotEmpty)
+                Image.network(
+                  'https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=${place.photos![0].photoReference!}&key=AIzaSyAdAIFHBBzNyyB6-JzY5dQtOGiLcM9y25w',
+                  height: 100,
+                  width: 100,
+                  fit: BoxFit.cover,
+                ),
+              Text('Address: ${tappedPlacedDetail["formatted_address"]}'),
+              Text(
+                  'Operating Hours: ${place.openingHours?.weekdayText?.join(', ') ?? ''}'),
+              Text('Rating: ${place.rating ?? ''}'),
+              // Text('Website: ${place. ?? ''}'),
+              Text(
+                  'Phone Number: ${tappedPlacedDetail["formatted_phone_number"] ?? ''}'),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('Close'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

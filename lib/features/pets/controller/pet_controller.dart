@@ -84,7 +84,7 @@ class PetAttentionController extends StateNotifier<List<PetModel>> {
 
   Future<void> checkAttention() async {
     try {
-      final data = ref.read(userPetsProvider);
+      final data = ref.watch(userPetsProvider);
       List<PetModel> pets = [];
       for (var pet in data.value!) {
         if (DateTime.now().difference(pet.lastbath).inHours > 24 ||

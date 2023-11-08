@@ -153,7 +153,7 @@ List<PersistentBottomNavBarItem> navBarItems() {
         inactiveColorSecondary: CupertinoColors.systemGrey),
     PersistentBottomNavBarItem(
         icon: const Icon(CupertinoIcons.map),
-        title: "Map",
+        title: "Nearby",
         activeColorPrimary: Colors.deepOrange,
         inactiveColorPrimary: CupertinoColors.systemGrey,
         inactiveColorSecondary: CupertinoColors.systemGrey),
