@@ -275,6 +275,26 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     );
   }
 
+  void _showImageDialog(BuildContext context, String imageUrl) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          child: Container(
+            width: double.infinity,
+            height: 300,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: NetworkImage(imageUrl),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   void openDetailsScreen(BuildContext context, PlacesSearchResult place) {
     showDialog(
       context: context,
@@ -282,20 +302,50 @@ class _MapScreenState extends ConsumerState<MapScreen> {
         return AlertDialog(
           title: Text(place.name ?? ''),
           content: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
               if (place.photos != null && place.photos!.isNotEmpty)
-                Image.network(
-                  'https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=${place.photos![0].photoReference!}&key=AIzaSyAdAIFHBBzNyyB6-JzY5dQtOGiLcM9y25w',
-                  height: 100,
-                  width: 100,
-                  fit: BoxFit.cover,
+                GestureDetector(
+                  onTap: () {
+                    _showImageDialog(context,
+                        'https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=${place.photos![0].photoReference!}&key=AIzaSyAdAIFHBBzNyyB6-JzY5dQtOGiLcM9y25w');
+                  },
+                  child: Container(
+                    alignment: Alignment.center,
+                    child: Image.network(
+                      'https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=${place.photos![0].photoReference!}&key=AIzaSyAdAIFHBBzNyyB6-JzY5dQtOGiLcM9y25w',
+                      height: 100,
+                      width: 100,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
                 ),
-              Text('Address: ${tappedPlacedDetail["formatted_address"]}'),
-              Text(
-                  'Operating Hours: ${place.openingHours?.weekdayText?.join(', ') ?? ''}'),
-              Text('Rating: ${place.rating ?? ''}'),
+              // Container(
+              //     alignment: Alignment.center,
+              //     child: Image.network(
+              //       'https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=${place.photos![0].photoReference!}&key=AIzaSyAdAIFHBBzNyyB6-JzY5dQtOGiLcM9y25w',
+              //       height: 100,
+              //       width: 100,
+              //       fit: BoxFit.cover,
+              //     )),
+              const SizedBox(height: 10),
+
+              Text('Address'),
+              Text('${tappedPlacedDetail["formatted_address"]}'),
+              const SizedBox(height: 10),
+              Text('Operating Hours'),
+              for (var timing in tappedPlacedDetail["opening_hours"]
+                  ['weekday_text'])
+                Text(timing),
+              // Text(
+              //     'Operating Hours: ${place.openingHours?.weekdayText?.join(', ') ?? ''}'),
+              const SizedBox(height: 10),
+
+              Text('Rating: ${place.rating ?? ''}/5.0'),
               // Text('Website: ${place. ?? ''}'),
+              const SizedBox(height: 10),
+
               Text(
                   'Phone Number: ${tappedPlacedDetail["formatted_phone_number"] ?? ''}'),
             ],
