@@ -1,4 +1,7 @@
 import 'dart:io';
+import 'dart:math';
+import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pet_app/core/constants/constants.dart';
@@ -36,42 +39,9 @@ final petControllerProvider = StateNotifierProvider<PetController, bool>((ref) {
   return PetController(petRepo: petRepo, ref: ref, storageRepo: storageRepo);
 });
 
-// final petLoopProvider = StateNotifierProvider<PetLoop, AsyncValue>((ref) {
-//   final petRepo = ref.watch(petRepoProvider);
-//   return PetLoop(petRepo: petRepo, ref: ref);
-// });
-
-// class PetLoop extends StateNotifier<AsyncValue> {
-//   final Ref _ref;
-//   PetLoop({
-//     required PetRepo petRepo,
-//     required Ref ref,
-//   })  : _ref = ref,
-//         super(const AsyncValue.loading()) {
-//     getPetsLoop(const Duration(seconds: 5));
-//   }
-
-//   Future<void> getPetsLoop(Duration delay) async {
-//     while (true) {
-//       try {
-//         final data = _ref.read(userPetsProvider);
-//         List<PetModel> pets = [];
-//         for (var pet in data.value!) {
-//           pets.add(pet);
-//         }
-//         state = AsyncValue.data(pets);
-//       } catch (e) {
-//         state = AsyncValue.error(e, StackTrace.current);
-//       }
-//       await Future.delayed(delay);
-//     }
-//   }
-// }
-
 final petAttentionProvider =
     StateNotifierProvider<PetAttentionController, List<PetModel>>((ref) {
   final petRepo = ref.watch(petRepoProvider);
-
   return PetAttentionController(petRepo, ref);
 });
 
@@ -81,24 +51,109 @@ class PetAttentionController extends StateNotifier<List<PetModel>> {
   }
   final PetRepo petRepo;
   final Ref ref;
+  List<PetModel>? previousState;
 
   Future<void> checkAttention() async {
     try {
       final data = ref.watch(userPetsProvider);
       List<PetModel> pets = [];
+      // print("New pet");
       for (var pet in data.value!) {
-        if (DateTime.now().difference(pet.lastbath).inHours > 24 ||
-            DateTime.now().difference(pet.lastfeeding).inHours > 6 ||
-            DateTime.now().difference(pet.lastwalk).inHours > 6 ||
-            DateTime.now().difference(pet.lastplaytime).inHours > 3) {
+        if (DateTime.now().difference(pet.lastbath).inSeconds >=
+                Constants.lastbathThreshhold ||
+            DateTime.now().difference(pet.lastfeeding).inSeconds >=
+                Constants.lastfeedingThreshhold ||
+            DateTime.now().difference(pet.lastwalk).inSeconds >=
+                Constants.lastwalkingThreshhold ||
+            DateTime.now().difference(pet.lastplaytime).inSeconds >=
+                Constants.lastplaytimeThreshhold) {
           pets.add(pet);
         }
       }
-      state = pets;
+
+      if (!const ListEquality().equals(pets, previousState)) {
+        // Only update the state if there's a change
+        print("Pets attention changed");
+        previousState = List.from(pets); // Update the previous state
+        state = pets;
+        AwesomeNotifications().cancelAllSchedules();
+
+        for (var pet in pets) {
+          scheduleNotificationForPet(pet);
+        }
+      }
     } catch (e) {
       state = [];
     }
     Future.delayed(const Duration(seconds: 1), checkAttention);
+  }
+
+  void scheduleNotificationForPet(PetModel pet) {
+    // Calculate the time differences
+    int hoursSinceLastBath = DateTime.now().difference(pet.lastbath).inSeconds;
+    int hoursSinceLastFeeding =
+        DateTime.now().difference(pet.lastfeeding).inSeconds;
+    int hoursSinceLastWalking =
+        DateTime.now().difference(pet.lastwalk).inSeconds;
+    int hoursSinceLastPlaytime =
+        DateTime.now().difference(pet.lastplaytime).inSeconds;
+
+    // Check if the time differences are greater than their individual thresholds
+    if (hoursSinceLastBath < Constants.lastbathThreshhold) {
+      print(
+          "Scheduling notification for ${pet.name} pets bath at $hoursSinceLastBath");
+      scheduleNotification(
+          pet, Constants.lastbathThreshhold - hoursSinceLastBath, "Bath");
+    }
+    if (hoursSinceLastFeeding < Constants.lastfeedingThreshhold) {
+      print(
+          "Scheduling notification for ${pet.name} pets feeding at $hoursSinceLastFeeding");
+      scheduleNotification(pet,
+          Constants.lastfeedingThreshhold - hoursSinceLastFeeding, "Feeding");
+    }
+    if (hoursSinceLastWalking < Constants.lastwalkingThreshhold) {
+      print(
+          "Scheduling notification for ${pet.name} pets walking at $hoursSinceLastWalking");
+      scheduleNotification(pet,
+          Constants.lastwalkingThreshhold - hoursSinceLastWalking, "Walking");
+    }
+    if (hoursSinceLastPlaytime < Constants.lastplaytimeThreshhold) {
+      print(
+          "Scheduling notification for ${pet.name} pets playtime at $hoursSinceLastPlaytime");
+      scheduleNotification(
+          pet,
+          Constants.lastplaytimeThreshhold - hoursSinceLastPlaytime,
+          "Playtime");
+    }
+  }
+
+  void scheduleNotification(PetModel pet, int hours, String type) {
+    // Customize the notification content
+    String title = '${type} time!';
+    String body = 'It\'s time to give ${pet.name} attention!';
+
+    // Generate a random number as a tag
+    int randomTag = Random().nextInt(100000);
+
+    // Calculate the time to schedule the notification in the future
+    // DateTime scheduledTime =
+    //     DateTime.now().add(Duration(hours: hours, seconds: 1));
+    // DEBUG DONT FORGET
+    DateTime scheduledTime = DateTime.now().add(Duration(seconds: hours));
+
+    // Schedule the notification
+    AwesomeNotifications().createNotification(
+      content: NotificationContent(
+        id: randomTag, // Use a random number as the ID
+        channelKey: 'basic_channel',
+        title: title,
+        body: body,
+      ),
+      schedule: NotificationCalendar.fromDate(
+          allowWhileIdle: true,
+          date: scheduledTime), // Use the random number as a tag
+    );
+    print('Scheduled notification for ${pet.name} in $scheduledTime');
   }
 }
 
@@ -114,7 +169,7 @@ class PetRoutineController extends StateNotifier<bool> {
   final List time;
 
   void checkRoutine() {
-    if (DateTime.now().difference(time[0]).inHours > time[1]) {
+    if (DateTime.now().difference(time[0]).inSeconds >= time[1]) {
       state = true;
     }
     Future.delayed(const Duration(seconds: 5), checkRoutine);

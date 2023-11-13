@@ -3,20 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pet_app/features/auth/controller/auth_controller.dart';
 import 'package:pet_app/features/pets/screens/addpet_screen.dart';
+import 'package:routemaster/routemaster.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
-  // Future<void> _logout(BuildContext context) async {
-  //   try {
-  //     await FirebaseAuth.instance.signOut();
-  //     Navigator.of(context, rootNavigator: true).pushReplacement(
-  //       new MaterialPageRoute(builder: (context) => new LoginPageScreen()),
-  //     );
-  //   } catch (e) {
-  //     // Handle error if logout fails
-  //     print('Error logging out: $e');
-  //   }
-  // }
   void logOut(WidgetRef ref) {
     ref.read(authControllerProvider.notifier).logout();
   }
@@ -49,12 +39,12 @@ class ProfileScreen extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 10),
-              ListTile(
-                title: const Text('Edit Profile'),
-                onTap: () {
-                  // Handle edit profile action
-                },
-              ),
+              // ListTile(
+              //   title: const Text('Edit Profile'),
+              //   onTap: () {
+              //     // Handle edit profile action
+              //   },
+              // ),
               // ListTile(
               //   title: const Text('Edit Pets'),
               //   onTap: () {
@@ -68,6 +58,7 @@ class ProfileScreen extends ConsumerWidget {
               ListTile(
                 title: const Text('Change Password'),
                 onTap: () {
+                  Routemaster.of(context).push('/changepw');
                   // Handle change password action
                 },
               ),

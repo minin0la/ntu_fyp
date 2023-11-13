@@ -22,6 +22,8 @@ class HomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(userProvider);
     final refreshPets = ref.watch(petAttentionProvider);
+    // final refreshNotification = ref.watch(petNotificationProvider);
+    // print(refreshPets);
 
     return Scaffold(
       backgroundColor: Colors.deepOrange,

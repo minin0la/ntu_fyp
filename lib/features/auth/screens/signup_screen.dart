@@ -38,83 +38,87 @@ class SignupScreen extends ConsumerWidget {
           ? const Loader()
           : Padding(
               padding: const EdgeInsets.all(16.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('Sign Up',
-                      style: GoogleFonts.getFont(
-                        'Dancing Script',
-                        textStyle: const TextStyle(
-                          fontSize: 46,
-                          color: Colors.black,
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const SizedBox(height: 135),
+                    Text('Sign Up',
+                        style: GoogleFonts.getFont(
+                          'Dancing Script',
+                          textStyle: const TextStyle(
+                            fontSize: 46,
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        )),
+                    const SizedBox(height: 30.0),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: _firstnameController,
+                            decoration: const InputDecoration(
+                              labelText: 'First Name',
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 16.0),
+                        Expanded(
+                          child: TextField(
+                            controller: _lastnameController,
+                            decoration: const InputDecoration(
+                              labelText: 'Last Name',
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16.0),
+                    TextField(
+                      controller: _phonenumberController,
+                      decoration: const InputDecoration(
+                        labelText: 'Phone Number',
+                      ),
+                      keyboardType: TextInputType.phone,
+                    ),
+                    const SizedBox(height: 16.0),
+                    TextField(
+                      controller: _emailController,
+                      decoration: const InputDecoration(
+                        labelText: 'Email',
+                      ),
+                      keyboardType: TextInputType.emailAddress,
+                    ),
+                    const SizedBox(height: 16.0),
+                    TextField(
+                      controller: _passwordController,
+                      obscureText: true,
+                      decoration: const InputDecoration(
+                        labelText: 'Password',
+                      ),
+                      keyboardType: TextInputType.visiblePassword,
+                    ),
+                    const SizedBox(height: 16.0),
+                    ElevatedButton(
+                        onPressed: () =>
+                            signUpWithEmailAndPassword(context, ref),
+                        child: const Text('Sign up')),
+                    TextButton(
+                      onPressed: () {
+                        Routemaster.of(context).pop();
+                      },
+                      child: const Text(
+                        'Have an account? Login here',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.blue,
                           fontWeight: FontWeight.bold,
                         ),
-                      )),
-                  const SizedBox(height: 30.0),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: _firstnameController,
-                          decoration: const InputDecoration(
-                            labelText: 'First Name',
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 16.0),
-                      Expanded(
-                        child: TextField(
-                          controller: _lastnameController,
-                          decoration: const InputDecoration(
-                            labelText: 'Last Name',
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16.0),
-                  TextField(
-                    controller: _phonenumberController,
-                    decoration: const InputDecoration(
-                      labelText: 'Phone Number',
-                    ),
-                    keyboardType: TextInputType.phone,
-                  ),
-                  const SizedBox(height: 16.0),
-                  TextField(
-                    controller: _emailController,
-                    decoration: const InputDecoration(
-                      labelText: 'Email',
-                    ),
-                    keyboardType: TextInputType.emailAddress,
-                  ),
-                  const SizedBox(height: 16.0),
-                  TextField(
-                    controller: _passwordController,
-                    obscureText: true,
-                    decoration: const InputDecoration(
-                      labelText: 'Password',
-                    ),
-                    keyboardType: TextInputType.visiblePassword,
-                  ),
-                  const SizedBox(height: 16.0),
-                  ElevatedButton(
-                      onPressed: () => signUpWithEmailAndPassword(context, ref),
-                      child: const Text('Sign up')),
-                  TextButton(
-                    onPressed: () {
-                      Routemaster.of(context).pop();
-                    },
-                    child: const Text(
-                      'Have an account? Login here',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.blue,
-                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
     );

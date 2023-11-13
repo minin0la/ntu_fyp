@@ -68,8 +68,37 @@ class AuthRepo {
       userModel = await getUserdata(userCredential.user!.uid).first;
       // if not error, return userModel
       return right(userModel);
-    } on FirebaseException catch (e) {
-      throw e.message!;
+      // } on FirebaseException catch (e) {
+      // throw e.message!;
+    } catch (e) {
+      //if error, return left with a error string
+      return left(Failure(e.toString()));
+    }
+  }
+
+  FutureEither<UserModel> changePassword(
+      String email, String oldPassword, String newPassword) async {
+    try {
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+          email: email, password: oldPassword);
+      await userCredential.user!.updatePassword(newPassword);
+      UserModel userModel;
+      // Check if new user.
+      userModel = await getUserdata(userCredential.user!.uid).first;
+      // if not error, return userModel
+      return right(userModel);
+      // } on FirebaseException catch (e) {
+      // throw e.message!;
+    } catch (e) {
+      //if error, return left with a error string
+      return left(Failure(e.toString()));
+    }
+  }
+
+  FutureEither<String> resetPassword(String email) async {
+    try {
+      await _auth.sendPasswordResetEmail(email: email);
+      return right('success');
     } catch (e) {
       //if error, return left with a error string
       return left(Failure(e.toString()));

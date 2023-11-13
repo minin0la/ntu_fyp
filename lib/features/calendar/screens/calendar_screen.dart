@@ -105,25 +105,27 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
         _selectedToDate == null ||
         _selectedToTime == null ||
         _dropdownValue == null ||
-        petdropdownValue == null) {
+        _petdropdownValue == null) {
       return;
     }
     ref.read(calendarControllerProvider.notifier).addCalendar(
         _eventController.text.trim(),
         DateTime(
-            _selectedFromDate!.year,
-            _selectedFromDate!.month,
-            _selectedFromDate!.day,
-            _selectedFromTime!.hour,
-            _selectedFromTime!.minute),
+          _selectedFromDate!.year,
+          _selectedFromDate!.month,
+          _selectedFromDate!.day,
+          _selectedFromTime!.hour,
+          _selectedFromTime!.minute,
+        ).toLocal(),
         DateTime(
-            _selectedToDate!.year,
-            _selectedToDate!.month,
-            _selectedToDate!.day,
-            _selectedToTime!.hour,
-            _selectedToTime!.minute),
+                _selectedToDate!.year,
+                _selectedToDate!.month,
+                _selectedToDate!.day,
+                _selectedToTime!.hour,
+                _selectedToTime!.minute)
+            .toLocal(),
         _dropdownValue,
-        petdropdownValue,
+        _petSelecteddropdownValue,
         context);
   }
 
@@ -140,15 +142,18 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   DateTime? _selectedFromDate;
   DateTime? _selectedToDate;
   String _dropdownValue = "Appointment";
-  String petdropdownValue = '';
+  String _petdropdownValue = '';
+  String _petSelecteddropdownValue = '';
   TextEditingController _eventController = TextEditingController();
+  List<String> userPetsNames = [];
   Map<DateTime, List<CalendarModel>> events = {};
 
   late final ValueNotifier<List<CalendarModel>> _selectedEvents;
   @override
   Widget build(BuildContext context) {
-    List<String> userPetsNames = ref.watch(userPetsNamesProvider).when(
+    userPetsNames = ref.watch(userPetsNamesProvider).when(
           data: (names) => names.map<String>((String name) {
+            // _petdropdownValue = name[0];
             return name;
           }).toList(),
           error: (error, stackTrace) => ["Error"],
@@ -158,6 +163,9 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
       data: (calendarList) {
         DateTime selectedDay = _selectedDay!;
         _selectedEvents.value = calendarList[selectedDay] ?? [];
+        setState(() {
+          events = calendarList;
+        });
         return calendarList;
       },
       error: (error, stackTrace) {
@@ -169,7 +177,8 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
         return {};
       },
     );
-    petdropdownValue = userPetsNames[0];
+    _petdropdownValue = userPetsNames[0];
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Calendar'),
@@ -238,15 +247,21 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                             height: 10.0,
                           ),
                           const Text("Pet:"),
-                          DropdownButton<String>(
-                            value: petdropdownValue,
+                          DropdownButtonFormField<String>(
+                            value: _petdropdownValue,
                             items: userPetsNames.map((String e) {
                               return DropdownMenuItem<String>(
                                   value: e, child: Text(e));
                             }).toList(),
-                            onChanged: (String? newValue) {
+                            onChanged: (String? newPetValue) {
                               setState(() {
-                                petdropdownValue = newValue!;
+                                _petSelecteddropdownValue = newPetValue!;
+                              });
+                            },
+                            onSaved: (String? newPetValue) {
+                              setState(() {
+                                _petdropdownValue = newPetValue!;
+                                _petSelecteddropdownValue = newPetValue;
                               });
                             },
                           ),
@@ -274,7 +289,8 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                             _selectedToDate = null;
                             _selectedToTime = null;
                             _dropdownValue = "Appointment";
-                            petdropdownValue = userPetsNames[0];
+                            _petdropdownValue = userPetsNames[0];
+                            _petSelecteddropdownValue = '';
                             _selectedEvents.value =
                                 _getEventsForDay(_selectedDay!);
                             // Navigator.of(context).pop();
@@ -333,7 +349,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                           ),
                           child: ListTile(
                               title: Text(
-                                  '${value[index].title} (${value[index].appointmentType})'),
+                                  '${value[index].title} (${value[index].appointmentType}) [${value[index].petName}]'),
                               subtitle: Text(
                                   '${DateFormat('dd-MM-yyyy').format(value[index].startDateTime!)} - ${DateFormat('dd-MM-yyyy').format(value[index].endDateTime!)}\n${DateFormat('jm').format(value[index].startDateTime!)} - ${DateFormat('jm').format(value[index].endDateTime!)}'),
                               trailing: PopupMenuButton<CalendarMenu>(

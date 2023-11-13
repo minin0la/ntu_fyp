@@ -1,7 +1,12 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:ffi';
+import 'dart:math';
+
+import 'package:awesome_notifications/awesome_notifications.dart';
 import "package:flutter/material.dart";
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pet_app/core/common/loader.dart';
+import 'package:pet_app/core/constants/constants.dart';
 import 'package:pet_app/features/pets/controller/pet_controller.dart';
 import 'package:pet_app/models/pet_model.dart';
 import 'package:routemaster/routemaster.dart';
@@ -23,6 +28,12 @@ class PetScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // ref.watch(userPetsProvider).when(
+    //     data: (pet) => {
+    //           print('pet'),
+    //         },
+    //     error: (err, stack) => Text(err.toString()),
+    //     loading: () => const Loader());
     return Scaffold(
         body: ref.watch(getPetByIDProvider(petID)).when(
               data: (pet) => NestedScrollView(
@@ -83,10 +94,13 @@ class PetScreen extends ConsumerWidget {
                       margin: const EdgeInsets.symmetric(
                           vertical: 10, horizontal: 10),
                       decoration: BoxDecoration(
-                          color:
-                              ref.watch(petRoutineProvider([pet.lastbath, 5]))
-                                  ? Colors.red.withOpacity(0.2)
-                                  : Colors.green.withOpacity(0.2),
+                          color: ref.watch(petRoutineProvider([
+                            pet.lastbath,
+                            Constants.lastbathThreshhold,
+                            pet.name
+                          ]))
+                              ? Colors.red.withOpacity(0.2)
+                              : Colors.green.withOpacity(0.2),
                           borderRadius:
                               const BorderRadius.all(Radius.circular(20))),
                       child: InkWell(
@@ -110,7 +124,7 @@ class PetScreen extends ConsumerWidget {
                                   fontWeight: FontWeight.bold,
                                 )),
                             Text(
-                                "${DateTime.now().difference(pet.lastbath).inHours.toString()} hours ago",
+                                "${DateTime.now().difference(pet.lastbath).inSeconds.toString()} hours ago",
                                 style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
@@ -123,8 +137,11 @@ class PetScreen extends ConsumerWidget {
                       margin: const EdgeInsets.symmetric(
                           vertical: 10, horizontal: 10),
                       decoration: BoxDecoration(
-                          color: ref.watch(
-                                  petRoutineProvider([pet.lastfeeding, 5]))
+                          color: ref.watch(petRoutineProvider([
+                            pet.lastfeeding,
+                            Constants.lastfeedingThreshhold,
+                            pet.name
+                          ]))
                               ? Colors.red.withOpacity(0.2)
                               : Colors.green.withOpacity(0.2),
                           borderRadius:
@@ -150,7 +167,7 @@ class PetScreen extends ConsumerWidget {
                                   fontWeight: FontWeight.bold,
                                 )),
                             Text(
-                                "${DateTime.now().difference(pet.lastfeeding).inHours.toString()} hours ago",
+                                "${DateTime.now().difference(pet.lastfeeding).inSeconds.toString()} hours ago",
                                 style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
@@ -163,10 +180,13 @@ class PetScreen extends ConsumerWidget {
                       margin: const EdgeInsets.symmetric(
                           vertical: 10, horizontal: 10),
                       decoration: BoxDecoration(
-                          color:
-                              ref.watch(petRoutineProvider([pet.lastwalk, 5]))
-                                  ? Colors.red.withOpacity(0.2)
-                                  : Colors.green.withOpacity(0.2),
+                          color: ref.watch(petRoutineProvider([
+                            pet.lastwalk,
+                            Constants.lastwalkingThreshhold,
+                            pet.name
+                          ]))
+                              ? Colors.red.withOpacity(0.2)
+                              : Colors.green.withOpacity(0.2),
                           borderRadius:
                               const BorderRadius.all(Radius.circular(20))),
                       child: InkWell(
@@ -190,7 +210,7 @@ class PetScreen extends ConsumerWidget {
                                   fontWeight: FontWeight.bold,
                                 )),
                             Text(
-                                "${DateTime.now().difference(pet.lastwalk).inHours.toString()} hours ago",
+                                "${DateTime.now().difference(pet.lastwalk).inSeconds.toString()} hours ago",
                                 style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
@@ -203,8 +223,11 @@ class PetScreen extends ConsumerWidget {
                       margin: const EdgeInsets.symmetric(
                           vertical: 10, horizontal: 10),
                       decoration: BoxDecoration(
-                          color: ref.watch(
-                                  petRoutineProvider([pet.lastplaytime, 5]))
+                          color: ref.watch(petRoutineProvider([
+                            pet.lastplaytime,
+                            Constants.lastplaytimeThreshhold,
+                            pet.name
+                          ]))
                               ? Colors.red.withOpacity(0.2)
                               : Colors.green.withOpacity(0.2),
                           borderRadius:
@@ -230,7 +253,7 @@ class PetScreen extends ConsumerWidget {
                                   fontWeight: FontWeight.bold,
                                 )),
                             Text(
-                                "${DateTime.now().difference(pet.lastplaytime).inHours.toString()} hours ago",
+                                "${DateTime.now().difference(pet.lastplaytime).inSeconds.toString()} hours ago",
                                 style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,

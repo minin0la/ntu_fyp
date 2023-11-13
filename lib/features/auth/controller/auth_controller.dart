@@ -53,8 +53,37 @@ class AuthController extends StateNotifier<bool> {
     state = true;
     final user = await _authRepo.signInWithEmailAndPassword(email, password);
     state = false;
-    user.fold((l) => showSnackBar(context, l.message), (userModel) {
+    user.fold((l) {
+      showSnackBar(context, l.message);
+      Routemaster.of(context).replace('/');
+    }, (userModel) {
       _ref.read(userProvider.notifier).update((state) => userModel);
+    });
+  }
+
+  void changePassword(
+      String oldPassword, String newPassword, BuildContext context) async {
+    state = true;
+    final email = _ref.read(userProvider)!.email;
+    final user =
+        await _authRepo.changePassword(email, oldPassword, newPassword);
+    state = false;
+    user.fold((l) {
+      showSnackBar(context, l.message);
+      Routemaster.of(context).replace('/');
+    }, (userModel) {
+      showSnackBar(
+          context, "Password changed successfully. Please login again");
+      _ref.read(authControllerProvider.notifier).logout();
+      Routemaster.of(context).replace('/');
+    });
+  }
+
+  void resetPassword(String email, BuildContext context) async {
+    final result = await _authRepo.resetPassword(email);
+    result.fold((l) => showSnackBar(context, l.message), (r) {
+      showSnackBar(context, "Reset password email sent");
+      Routemaster.of(context).pop();
     });
   }
 

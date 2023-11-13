@@ -61,10 +61,13 @@ class CalendarModel {
       DateTime? startDateTime = calendarModel.startDateTime;
 
       if (startDateTime != null) {
-        DateTime startDay =
-            DateTime(startDateTime.year, startDateTime.month, startDateTime.day)
-                .toUtc();
-
+        print(startDateTime.year);
+        print(startDateTime.month);
+        print(startDateTime.day);
+        DateTime startDay = DateTime(
+                startDateTime.year, startDateTime.month, startDateTime.day, 8)
+            .toUtc();
+        print(startDay);
         if (resultMap.containsKey(startDay)) {
           resultMap[startDay]!.add(calendarModel);
         } else {

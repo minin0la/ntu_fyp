@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_webservice/places.dart';
 import 'package:pet_app/features/maps/controller/map_controller.dart';
@@ -113,76 +114,97 @@ class _MapScreenState extends ConsumerState<MapScreen> {
           ),
         ],
       ),
-      body: StreamBuilder<List<PlacesSearchResult>>(
-        stream: Stream.value(mapPlaces), // Example location coordinates
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return CircularProgressIndicator(); // Show a loading indicator while waiting for data
-          } else if (snapshot.hasError) {
-            return Text('Error: ${snapshot.error}');
-          } else {
-            if (snapshot.data!.length == 0) {
-              updateListView(mapController);
-            }
-            // if (snapshot.data == []) {
-            //   updateListView(mapController);
-            // }
-            List<PlacesSearchResult> _placesList = snapshot.data!;
-            return SingleChildScrollView(
-              scrollDirection: Axis.vertical,
-              child: Column(
-                children: [
-                  ListView.builder(
-                    physics: const NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: _placesList.length,
-                    itemBuilder: (context, index) {
-                      final place = _placesList[index];
-                      final bool isOpenNow =
-                          place.openingHours?.openNow ?? false;
-                      return ListTile(
-                        title: Text('${place.name}'),
-                        subtitle: Row(
-                          children: [
-                            Text(
-                              isOpenNow ? 'Open Now' : 'Closed',
-                              style: TextStyle(
-                                color: isOpenNow ? Colors.green : Colors.red,
-                                fontWeight: FontWeight.bold,
+      body: mapPlaces == []
+          ? Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+              const SizedBox(height: 135),
+              Image.asset(
+                "assets/login_pet.png",
+                width: 200,
+                height: 200,
+              ),
+              const SizedBox(height: 30),
+              Text('Refresh to load nearby places',
+                  style: GoogleFonts.getFont(
+                    'Dancing Script',
+                    textStyle: const TextStyle(
+                      fontSize: 46,
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  )),
+            ])
+          : StreamBuilder<List<PlacesSearchResult>>(
+              stream: Stream.value(mapPlaces), // Example location coordinates
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return CircularProgressIndicator(); // Show a loading indicator while waiting for data
+                } else if (snapshot.hasError) {
+                  return Text('Error: ${snapshot.error}');
+                } else {
+                  if (snapshot.data!.length == 0) {
+                    updateListView(mapController);
+                  }
+                  // if (snapshot.data == []) {
+                  //   updateListView(mapController);
+                  // }
+                  List<PlacesSearchResult> _placesList = snapshot.data!;
+                  return SingleChildScrollView(
+                    scrollDirection: Axis.vertical,
+                    child: Column(
+                      children: [
+                        ListView.builder(
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount: _placesList.length,
+                          itemBuilder: (context, index) {
+                            final place = _placesList[index];
+                            final bool isOpenNow =
+                                place.openingHours?.openNow ?? false;
+                            return ListTile(
+                              title: Text('${place.name}'),
+                              subtitle: Row(
+                                children: [
+                                  Text(
+                                    isOpenNow ? 'Open Now' : 'Closed',
+                                    style: TextStyle(
+                                      color:
+                                          isOpenNow ? Colors.green : Colors.red,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                      width:
+                                          8), // Add some space between the title and "Open Now"
+                                  Expanded(
+                                    // Added Expanded widget here
+                                    child: Text(
+                                      // Wrapped Text widget with Expanded
+                                      place.vicinity!,
+                                      overflow: TextOverflow
+                                          .ellipsis, // Added this line to handle long text
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                            SizedBox(
-                                width:
-                                    8), // Add some space between the title and "Open Now"
-                            Expanded(
-                              // Added Expanded widget here
-                              child: Text(
-                                // Wrapped Text widget with Expanded
-                                place.vicinity!,
-                                overflow: TextOverflow
-                                    .ellipsis, // Added this line to handle long text
+                              trailing: IconButton(
+                                icon: Icon(Icons.arrow_forward),
+                                onPressed: () async {
+                                  print(place.placeId);
+                                  tappedPlacedDetail =
+                                      await getPlace(place.placeId);
+                                  setState(() {});
+                                  openDetailsScreen(context, place);
+                                },
                               ),
-                            ),
-                          ],
-                        ),
-                        trailing: IconButton(
-                          icon: Icon(Icons.arrow_forward),
-                          onPressed: () async {
-                            print(place.placeId);
-                            tappedPlacedDetail = await getPlace(place.placeId);
-                            setState(() {});
-                            openDetailsScreen(context, place);
+                            );
                           },
                         ),
-                      );
-                    },
-                  ),
-                ],
-              ),
-            );
-          }
-        },
-      ),
+                      ],
+                    ),
+                  );
+                }
+              },
+            ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           showDialog(

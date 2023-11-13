@@ -35,6 +35,7 @@ class PetRepo {
       for (var doc in event.docs) {
         pets.add(PetModel.fromMap(doc.data() as Map<String, dynamic>));
       }
+      // print("UPDATED");
       return pets;
     });
   }
@@ -45,7 +46,6 @@ class PetRepo {
       for (var doc in event.docs) {
         pets.add(PetModel.fromMap(doc.data() as Map<String, dynamic>).name);
       }
-      print(pets);
       return pets;
     });
   }
