@@ -105,7 +105,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
         _selectedToDate == null ||
         _selectedToTime == null ||
         _dropdownValue == null ||
-        _petdropdownValue == null) {
+        _petdropdownValue == '') {
       return;
     }
     ref.read(calendarControllerProvider.notifier).addCalendar(
@@ -145,7 +145,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   String _petdropdownValue = '';
   String _petSelecteddropdownValue = '';
   TextEditingController _eventController = TextEditingController();
-  List<String> userPetsNames = [];
+  List<String> userPetsNames = [''];
   Map<DateTime, List<CalendarModel>> events = {};
 
   late final ValueNotifier<List<CalendarModel>> _selectedEvents;
@@ -157,7 +157,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
             return name;
           }).toList(),
           error: (error, stackTrace) => ["Error"],
-          loading: () => ["Loading..."],
+          loading: () => [''],
         );
     events = ref.watch(userCalendarsListProvider).when(
       data: (calendarList) {
@@ -177,7 +177,17 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
         return {};
       },
     );
-    _petdropdownValue = userPetsNames[0];
+    if (userPetsNames == [''] || userPetsNames.isEmpty) {
+      setState(() {
+        _petdropdownValue = '';
+        // _petSelecteddropdownValue = '';
+      });
+    } else {
+      setState(() {
+        _petdropdownValue = userPetsNames[0];
+        // _petSelecteddropdownValue = userPetsNames[0];
+      });
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -187,118 +197,139 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
           label: const Text("Add"),
           icon: const Icon(Icons.add),
           onPressed: () {
-            showDialog(
-                context: context,
-                builder: (context) {
-                  return AlertDialog(
-                    scrollable: true,
-                    title: const Text("New event"),
-                    content: Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text("Title"),
-                          TextField(
-                            controller: _eventController,
-                          ),
-                          const SizedBox(
-                            height: 10.0,
-                          ),
-                          // Put varible in string
+            if (userPetsNames == [''] || userPetsNames.isEmpty) {
+              showSnackBar(context, "Please add a pet first");
+            } else {
+              setState(() {
+                _petdropdownValue = userPetsNames[0];
+                _petSelecteddropdownValue = userPetsNames[0];
+              });
+              showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      scrollable: true,
+                      title: const Text("New event"),
+                      content: Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text("Title"),
+                            TextField(
+                              controller: _eventController,
+                            ),
+                            const SizedBox(
+                              height: 10.0,
+                            ),
+                            // Put varible in string
 
-                          Text(_selectedFromDate != null
-                              ? 'From: ${DateFormat('dd-MM-yyyy').format(_selectedFromDate!)}'
-                              : "From:"),
-                          ElevatedButton(
-                            onPressed: _showFromTimePicker,
-                            child: Text(_selectedFromTime != null
-                                ? _selectedFromTime!.format(context)
-                                : 'Start Time'),
-                          ),
-                          Text(_selectedToDate != null
-                              ? 'To: ${DateFormat('dd-MM-yyyy').format(_selectedToDate!)}'
-                              : "To:"),
-                          ElevatedButton(
-                            onPressed: _showToTimePicker,
-                            child: Text(_selectedToTime != null
-                                ? _selectedToTime!.format(context)
-                                : 'End Time'),
-                          ),
-                          const SizedBox(
-                            height: 10.0,
-                          ),
-                          const Text("Type:"),
-                          DropdownButton<String>(
-                            value: _dropdownValue,
-                            items: items.map((String value) {
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: Text(value),
-                              );
-                            }).toList(),
-                            onChanged: (String? newValue) {
-                              setState(() {
-                                _dropdownValue = newValue!;
-                              });
-                            },
-                          ),
-                          const SizedBox(
-                            height: 10.0,
-                          ),
-                          const Text("Pet:"),
-                          DropdownButtonFormField<String>(
-                            value: _petdropdownValue,
-                            items: userPetsNames.map((String e) {
-                              return DropdownMenuItem<String>(
-                                  value: e, child: Text(e));
-                            }).toList(),
-                            onChanged: (String? newPetValue) {
-                              setState(() {
-                                _petSelecteddropdownValue = newPetValue!;
-                              });
-                            },
-                            onSaved: (String? newPetValue) {
-                              setState(() {
-                                _petdropdownValue = newPetValue!;
-                                _petSelecteddropdownValue = newPetValue;
-                              });
-                            },
-                          ),
-                          // Create a dropdown menu
-                        ],
+                            Text(_selectedFromDate != null
+                                ? 'From: ${DateFormat('dd-MM-yyyy').format(_selectedFromDate!)}'
+                                : "From:"),
+                            ElevatedButton(
+                              onPressed: _showFromTimePicker,
+                              child: Text(_selectedFromTime != null
+                                  ? _selectedFromTime!.format(context)
+                                  : 'Start Time'),
+                            ),
+                            Text(_selectedToDate != null
+                                ? 'To: ${DateFormat('dd-MM-yyyy').format(_selectedToDate!)}'
+                                : "To:"),
+                            ElevatedButton(
+                              onPressed: _showToTimePicker,
+                              child: Text(_selectedToTime != null
+                                  ? _selectedToTime!.format(context)
+                                  : 'End Time'),
+                            ),
+                            const SizedBox(
+                              height: 10.0,
+                            ),
+                            const Text("Type:"),
+                            DropdownButton<String>(
+                              value: _dropdownValue,
+                              items: items.map((String value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(value),
+                                );
+                              }).toList(),
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  _dropdownValue = newValue!;
+                                });
+                              },
+                            ),
+                            const SizedBox(
+                              height: 10.0,
+                            ),
+                            const Text("Pet:"),
+                            DropdownButtonFormField<String>(
+                              value: _petdropdownValue,
+                              items: userPetsNames.map((String e) {
+                                return DropdownMenuItem<String>(
+                                    value: e, child: Text(e));
+                              }).toList(),
+                              onChanged: (String? newPetValue) {
+                                setState(() {
+                                  // _petdropdownValue = newPetValue!;
+
+                                  _petSelecteddropdownValue = newPetValue!;
+                                });
+                              },
+                              onSaved: (String? newPetValue) {
+                                setState(() {
+                                  _petdropdownValue = newPetValue!;
+                                  _petSelecteddropdownValue = newPetValue;
+                                });
+                              },
+                            ),
+                            // Create a dropdown menu
+                          ],
+                        ),
                       ),
-                    ),
-                    actions: [
-                      ElevatedButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: const Text("Cancel")),
-                      ElevatedButton(
-                          onPressed: () {
-                            // events.addAll({
-                            //   _selectedDay!: [
-                            //     // CalendarModel(title: _eventController.text)
-                            //   ]
-                            // });
-                            addCalendar();
-                            _eventController.text = '';
-                            _selectedFromDate = null;
-                            _selectedFromTime = null;
-                            _selectedToDate = null;
-                            _selectedToTime = null;
-                            _dropdownValue = "Appointment";
-                            _petdropdownValue = userPetsNames[0];
-                            _petSelecteddropdownValue = '';
-                            _selectedEvents.value =
-                                _getEventsForDay(_selectedDay!);
-                            // Navigator.of(context).pop();
-                          },
-                          child: const Text("Submit"))
-                    ],
-                  );
-                });
+                      actions: [
+                        ElevatedButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: const Text("Cancel")),
+                        ElevatedButton(
+                            onPressed: () {
+                              // events.addAll({
+                              //   _selectedDay!: [
+                              //     // CalendarModel(title: _eventController.text)
+                              //   ]
+                              // });
+                              addCalendar();
+                              _eventController.text = '';
+                              _selectedFromDate = null;
+                              _selectedFromTime = null;
+                              _selectedToDate = null;
+                              _selectedToTime = null;
+                              _dropdownValue = "Appointment";
+                              if (userPetsNames == [''] ||
+                                  userPetsNames.isEmpty) {
+                                setState(() {
+                                  _petdropdownValue = '';
+                                  _petSelecteddropdownValue = '';
+                                });
+                              } else {
+                                setState(() {
+                                  _petdropdownValue = userPetsNames[0];
+                                  _petSelecteddropdownValue = userPetsNames[0];
+                                });
+                              }
+                              // _petSelecteddropdownValue = '';
+                              _selectedEvents.value =
+                                  _getEventsForDay(_selectedDay!);
+                              // Navigator.of(context).pop();
+                            },
+                            child: const Text("Submit"))
+                      ],
+                    );
+                  });
+            }
           }),
       body: Column(
         children: [

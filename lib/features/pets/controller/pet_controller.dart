@@ -75,13 +75,13 @@ class PetAttentionController extends StateNotifier<List<PetModel>> {
         // Only update the state if there's a change
         print("Pets attention changed");
         previousState = List.from(pets); // Update the previous state
-        state = pets;
         AwesomeNotifications().cancelAllSchedules();
 
         for (var pet in pets) {
           scheduleNotificationForPet(pet);
         }
       }
+      state = pets;
     } catch (e) {
       state = [];
     }

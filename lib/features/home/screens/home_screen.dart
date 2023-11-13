@@ -219,8 +219,7 @@ class HomeScreen extends ConsumerWidget {
                               },
                             ),
                           )),
-                      error: (error, stackTrace) =>
-                          ErrorText(error: error.toString()),
+                      error: (error, stackTrace) => const ErrorText(error: ''),
                       loading: (() => const Loader()))
                 ],
               )),
