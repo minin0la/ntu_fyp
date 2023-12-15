@@ -27,7 +27,6 @@ class AuthRepo {
   // Check if any data change in user
   Stream<User?> get authStateChanges => _auth.authStateChanges();
 
-  // Function to create user with email and password
   FutureEither<UserModel> signUpWithEmailAndPassword(
       String firstname,
       String lastname,

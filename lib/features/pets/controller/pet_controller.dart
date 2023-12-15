@@ -72,9 +72,7 @@ class PetAttentionController extends StateNotifier<List<PetModel>> {
       }
 
       if (!const ListEquality().equals(pets, previousState)) {
-        // Only update the state if there's a change
-        print("Pets attention changed");
-        previousState = List.from(pets); // Update the previous state
+        previousState = List.from(pets);
         AwesomeNotifications().cancelAllSchedules();
 
         for (var pet in pets) {
@@ -100,26 +98,18 @@ class PetAttentionController extends StateNotifier<List<PetModel>> {
 
     // Check if the time differences are greater than their individual thresholds
     if (hoursSinceLastBath < Constants.lastbathThreshhold) {
-      print(
-          "Scheduling notification for ${pet.name} pets bath at $hoursSinceLastBath");
       scheduleNotification(
           pet, Constants.lastbathThreshhold - hoursSinceLastBath, "Bath");
     }
     if (hoursSinceLastFeeding < Constants.lastfeedingThreshhold) {
-      print(
-          "Scheduling notification for ${pet.name} pets feeding at $hoursSinceLastFeeding");
       scheduleNotification(pet,
           Constants.lastfeedingThreshhold - hoursSinceLastFeeding, "Feeding");
     }
     if (hoursSinceLastWalking < Constants.lastwalkingThreshhold) {
-      print(
-          "Scheduling notification for ${pet.name} pets walking at $hoursSinceLastWalking");
       scheduleNotification(pet,
           Constants.lastwalkingThreshhold - hoursSinceLastWalking, "Walking");
     }
     if (hoursSinceLastPlaytime < Constants.lastplaytimeThreshhold) {
-      print(
-          "Scheduling notification for ${pet.name} pets playtime at $hoursSinceLastPlaytime");
       scheduleNotification(
           pet,
           Constants.lastplaytimeThreshhold - hoursSinceLastPlaytime,
@@ -128,16 +118,10 @@ class PetAttentionController extends StateNotifier<List<PetModel>> {
   }
 
   void scheduleNotification(PetModel pet, int hours, String type) {
-    // Customize the notification content
-    String title = '${type} time!';
+    String title = '$type time!';
     String body = 'It\'s time to give ${pet.name} attention!';
-
-    // Generate a random number as a tag
     int randomTag = Random().nextInt(100000);
 
-    // Calculate the time to schedule the notification in the future
-    // DateTime scheduledTime =
-    //     DateTime.now().add(Duration(hours: hours, seconds: 1));
     // DEBUG DONT FORGET
     DateTime scheduledTime = DateTime.now().add(Duration(seconds: hours));
 
@@ -153,7 +137,6 @@ class PetAttentionController extends StateNotifier<List<PetModel>> {
           allowWhileIdle: true,
           date: scheduledTime), // Use the random number as a tag
     );
-    print('Scheduled notification for ${pet.name} in $scheduledTime');
   }
 }
 

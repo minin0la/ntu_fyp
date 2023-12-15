@@ -56,14 +56,12 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     );
 
     if (selectedFromTime != null) {
-      // Handle the selected time, e.g., set it in a variable
       setState(() {
         _selectedFromTime = selectedFromTime;
       });
     }
 
     if (selectedFromDate != null) {
-      // Handle the selected time, e.g., set it in a variable
       setState(() {
         _selectedFromDate = selectedFromDate;
       });
@@ -84,14 +82,12 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     );
 
     if (selectedToTime != null) {
-      // Handle the selected time, e.g., set it in a variable
       setState(() {
         _selectedToTime = selectedToTime;
       });
     }
 
     if (selectedToDate != null) {
-      // Handle the selected time, e.g., set it in a variable
       setState(() {
         _selectedToDate = selectedToDate;
       });
@@ -104,7 +100,6 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
         _selectedFromTime == null ||
         _selectedToDate == null ||
         _selectedToTime == null ||
-        _dropdownValue == null ||
         _petdropdownValue == '') {
       return;
     }
@@ -144,7 +139,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   String _dropdownValue = "Appointment";
   String _petdropdownValue = '';
   String _petSelecteddropdownValue = '';
-  TextEditingController _eventController = TextEditingController();
+  final TextEditingController _eventController = TextEditingController();
   List<String> userPetsNames = [''];
   Map<DateTime, List<CalendarModel>> events = {};
 
@@ -153,7 +148,6 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   Widget build(BuildContext context) {
     userPetsNames = ref.watch(userPetsNamesProvider).when(
           data: (names) => names.map<String>((String name) {
-            // _petdropdownValue = name[0];
             return name;
           }).toList(),
           error: (error, stackTrace) => ["Error"],
@@ -169,23 +163,19 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
         return calendarList;
       },
       error: (error, stackTrace) {
-        // Handle error, return a default value, or throw an exception if needed.
         return {};
       },
       loading: () {
-        // Return a default value or handle loading state.
         return {};
       },
     );
     if (userPetsNames == [''] || userPetsNames.isEmpty) {
       setState(() {
         _petdropdownValue = '';
-        // _petSelecteddropdownValue = '';
       });
     } else {
       setState(() {
         _petdropdownValue = userPetsNames[0];
-        // _petSelecteddropdownValue = userPetsNames[0];
       });
     }
 
@@ -284,7 +274,6 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                                 });
                               },
                             ),
-                            // Create a dropdown menu
                           ],
                         ),
                       ),
@@ -339,24 +328,17 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
             focusedDay: _focusedDay,
             calendarFormat: _calendarFormat,
             selectedDayPredicate: (day) {
-              // Use `selectedDayPredicate` to determine which day is currently selected.
-              // If this returns true, then `day` will be marked as selected.
-
-              // Using `isSameDay` is recommended to disregard
-              // the time-part of compared DateTime objects.
               return isSameDay(_selectedDay, day);
             },
             onDaySelected: _onDaySelected,
             onFormatChanged: (format) {
               if (_calendarFormat != format) {
-                // Call `setState()` when updating calendar format
                 setState(() {
                   _calendarFormat = format;
                 });
               }
             },
             onPageChanged: (focusedDay) {
-              // No need to call `setState()` here
               _focusedDay = focusedDay;
             },
             eventLoader: _getEventsForDay,
@@ -373,7 +355,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                     itemBuilder: (context, index) {
                       return Container(
                           margin:
-                              EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                              const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
                             border: Border.all(),

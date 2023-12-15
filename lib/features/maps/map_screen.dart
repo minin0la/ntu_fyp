@@ -33,9 +33,9 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   LatLng currentLocation =
       LatLng(1.290270, 103.851959); // Initial location coordinates
 
-  String selectedFilter = 'veterinary_care'; // Default filter
+  String selectedFilter = 'veterinary_care';
 
-  bool showOpenNowOnly = true; // Keep track of whether to show open now only
+  bool showOpenNowOnly = true;
 
   Future<void> updateListView(MapController mapController) async {
     Position position = await mapController.getUserCurrentLocation();
@@ -134,10 +134,10 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                   )),
             ])
           : StreamBuilder<List<PlacesSearchResult>>(
-              stream: Stream.value(mapPlaces), // Example location coordinates
+              stream: Stream.value(mapPlaces),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return CircularProgressIndicator(); // Show a loading indicator while waiting for data
+                  return CircularProgressIndicator();
                 } else if (snapshot.hasError) {
                   return Text('Error: ${snapshot.error}');
                 } else {
@@ -257,8 +257,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                     actions: [
                       TextButton(
                         onPressed: () {
-                          updateListView(
-                              mapController); // Call updateListView after selecting options
+                          updateListView(mapController);
                           Navigator.pop(context);
                         },
                         child: Text('Apply'),

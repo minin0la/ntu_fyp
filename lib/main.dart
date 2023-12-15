@@ -9,7 +9,6 @@ import 'package:pet_app/core/common/loader.dart';
 import 'package:pet_app/features/auth/controller/auth_controller.dart';
 import 'package:pet_app/features/calendar/screens/calendar_screen.dart';
 import 'package:pet_app/features/home/screens/home_screen.dart';
-import 'package:pet_app/features/pets/screens/addpet_screen.dart';
 import 'package:pet_app/models/user_model.dart';
 import 'package:pet_app/router.dart';
 import 'package:pet_app/features/maps/map_screen.dart';
@@ -28,7 +27,6 @@ void main() async {
     child: MyApp(),
   ));
   AwesomeNotifications().initialize(
-      // set the icon to null if you want to use the default app icon
       null,
       [
         NotificationChannel(
@@ -36,10 +34,9 @@ void main() async {
             channelKey: 'basic_channel',
             channelName: 'Basic notifications',
             channelDescription: 'Notification channel for basic tests',
-            defaultColor: Color(0xFF9D50DD),
+            defaultColor: const Color(0xFF9D50DD),
             ledColor: Colors.white)
       ],
-      // Channel groups are only visual and are not required
       channelGroups: [
         NotificationChannelGroup(
             channelGroupKey: 'basic_channel_group',
@@ -49,9 +46,6 @@ void main() async {
 
   AwesomeNotifications().isNotificationAllowed().then((isAllowed) {
     if (!isAllowed) {
-      // This is just a basic example. For real apps, you must show some
-      // friendly dialog box before call the request method.
-      // This is very important to not harm the user experience
       AwesomeNotifications().requestPermissionToSendNotifications();
     }
   });
@@ -124,13 +118,11 @@ class _MyHomePageState extends State<MyHomePage> {
       screens: screens(),
       items: navBarItems(),
       confineInSafeArea: true,
-      backgroundColor: Colors.white, // Default is Colors.white.
-      handleAndroidBackButtonPress: true, // Default is true.
-      resizeToAvoidBottomInset:
-          true, // This needs to be true if you want to move up the screen when keyboard appears. Default is true.
-      stateManagement: true, // Default is true.
-      hideNavigationBarWhenKeyboardShows:
-          true, // Recommended to set 'resizeToAvoidBottomInset' as true while using this argument. Default is true.
+      backgroundColor: Colors.white,
+      handleAndroidBackButtonPress: true,
+      resizeToAvoidBottomInset: true,
+      stateManagement: true,
+      hideNavigationBarWhenKeyboardShows: true,
       decoration: NavBarDecoration(
         borderRadius: BorderRadius.circular(10.0),
         colorBehindNavBar: Colors.white,
@@ -138,18 +130,15 @@ class _MyHomePageState extends State<MyHomePage> {
       popAllScreensOnTapOfSelectedTab: true,
       popActionScreens: PopActionScreensType.all,
       itemAnimationProperties: const ItemAnimationProperties(
-        // Navigation Bar's items animation properties.
         duration: Duration(milliseconds: 200),
         curve: Curves.ease,
       ),
       screenTransitionAnimation: const ScreenTransitionAnimation(
-        // Screen transition animation on change of selected tab.
         animateTabTransition: true,
         curve: Curves.ease,
         duration: Duration(milliseconds: 200),
       ),
-      navBarStyle:
-          NavBarStyle.style6, // Choose the nav bar style with this property.
+      navBarStyle: NavBarStyle.style6,
     ));
     // } else {
     //   return Scaffold(body: LoginPageScreen());

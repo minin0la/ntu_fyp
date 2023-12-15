@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pet_app/features/auth/controller/auth_controller.dart';
-import 'package:pet_app/features/pets/screens/addpet_screen.dart';
 import 'package:routemaster/routemaster.dart';
 
 class ProfileScreen extends ConsumerWidget {
@@ -59,7 +58,6 @@ class ProfileScreen extends ConsumerWidget {
                 title: const Text('Change Password'),
                 onTap: () {
                   Routemaster.of(context).push('/changepw');
-                  // Handle change password action
                 },
               ),
               ListTile(

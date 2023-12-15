@@ -61,7 +61,6 @@ class _ForgetPasswordScreen extends ConsumerState<ForgetPasswordScreen> {
                   ),
                   TextField(
                     controller: _emailController,
-                    // obscureText: true,17
                     decoration: const InputDecoration(
                       labelText: 'Email',
                     ),

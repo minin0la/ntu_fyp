@@ -1,8 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'dart:ffi';
-import 'dart:math';
 
-import 'package:awesome_notifications/awesome_notifications.dart';
 import "package:flutter/material.dart";
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pet_app/core/common/loader.dart';

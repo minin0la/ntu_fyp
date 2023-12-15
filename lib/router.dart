@@ -1,6 +1,3 @@
-// loggedOut
-// loggedIn
-
 import 'package:flutter/material.dart';
 import 'package:pet_app/features/auth/screens/changepw_screen.dart';
 import 'package:pet_app/features/auth/screens/forgetpw_screen.dart';
